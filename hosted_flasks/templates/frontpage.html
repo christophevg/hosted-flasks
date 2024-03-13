@@ -1,0 +1,10 @@
+<!doctype html>
+<title>Hosted Flasks</title>
+<nav>
+  <h1>Hosted Flasks</h1>
+  <ul>
+    {% for app in apps %}
+    <li><a href="{{ app }}">{{ app }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>

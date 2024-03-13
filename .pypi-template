@@ -1,0 +1,31 @@
+a_description_for_the_package: serve flask apps side by side
+classifiers:
+- 'Programming Language :: Python :: 3.8'
+- 'Programming Language :: Python :: 3.9'
+- 'Programming Language :: Python :: 3.10'
+- 'Programming Language :: Python :: 3.11'
+- 'Environment :: Web Environment'
+- 'Intended Audience :: Developers'
+- 'License :: OSI Approved :: MIT License'
+console_scripts: []
+first_year_of_publication: '2024'
+github_account: christophevg
+github_repo_name: hosted-flasks
+keywords_describing_the_package: multiple flask apps
+license: MIT
+package_module_name: hosted_flasks
+package_name: hosted-flasks
+package_tagline: serve flask apps side by side
+package_title: Hosted Flasks
+readme: .github/README.md
+requires:
+- Flask
+scripts: []
+skip:
+- docs
+- tests
+- (package_module_name)
+your_author_name: Christophe VG
+your_email_address: contact@christophe.vg
+your_full_name: Christophe VG
+your_name: Christophe VG
