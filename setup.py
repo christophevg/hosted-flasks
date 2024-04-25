@@ -22,6 +22,7 @@ CLASSIFIERS      = [
 ]
 INSTALL_REQUIRES = [
   "Flask",
+  "python-dotenv",
   
 ]
 ENTRY_POINTS = {

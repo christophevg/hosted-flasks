@@ -4,6 +4,12 @@ from pathlib import Path
 import importlib.util
 import sys
 
+from dotenv import dotenv_values
+
+from collections import namedtuple
+
+App = namedtuple("App", "name handler hostname path")
+
 logger = logging.getLogger(__name__)
 
 def find_apps(apps_folder):
@@ -12,7 +18,7 @@ def find_apps(apps_folder):
   path-name and value the flask app
   """
   logger.info(f"loading apps from: {apps_folder}")
-  apps = {}
+  apps = []
   for folder in Path(apps_folder).iterdir():
     if folder.is_dir():
       logger.info(f"loading {folder.name}")
@@ -21,9 +27,12 @@ def find_apps(apps_folder):
         mod = importlib.util.module_from_spec(spec)
         sys.modules[folder.name] = mod
         spec.loader.exec_module(mod)
-        app = getattr(mod, "app")
-        app_name = str(folder.name)
-        apps[f"/{app_name}"] = app
+        handler = getattr(mod, "app")
+        env = dotenv_values(folder / ".env")
+        name = folder.name
+        hostname = env.get("HOSTED_FLASKS_HOSTNAME")
+        path = env.get("HOSTED_FLASKS_PATH")
+        apps.append(App(name, handler, hostname, path))
       except FileNotFoundError:
         pass
       except AttributeError:

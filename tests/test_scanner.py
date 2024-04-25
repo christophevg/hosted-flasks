@@ -1,7 +1,8 @@
 from hosted_flasks.scanner import find_apps
 
 def test_app_detection(tmp_path):
-  assert find_apps(tmp_path) == {}
+  assert find_apps(tmp_path) == []
+
   # create 2 miminal apps
   for app_name in [ "app_1", "app_2" ]:
     folder = tmp_path / app_name
@@ -18,7 +19,7 @@ def hello_world():
 """)
   apps = find_apps(tmp_path)
   assert len(apps) == 2
-  assert list(apps.keys()) == [ "/app_1", "/app_2" ]
+  assert [ app.name for app in apps ] == [ "app_1", "app_2" ]
 
   # add dummy folder / coverage of FileNotFound
   dummy = tmp_path / "dummy"
@@ -26,7 +27,7 @@ def hello_world():
 
   apps = find_apps(tmp_path)
   assert len(apps) == 2
-  assert list(apps.keys()) == [ "/app_1", "/app_2" ]
+  assert [ app.name for app in apps ] == [ "app_1", "app_2" ]
   
   # add empty __init__.py / coverage of AttributeError
   init = dummy / "__init__.py"
@@ -34,4 +35,4 @@ def hello_world():
 
   apps = find_apps(tmp_path)
   assert len(apps) == 2
-  assert list(apps.keys()) == [ "/app_1", "/app_2" ]
+  assert [ app.name for app in apps ] == [ "app_1", "app_2" ]

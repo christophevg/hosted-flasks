@@ -20,6 +20,7 @@ package_title: Hosted Flasks
 readme: .github/README.md
 requires:
 - Flask
+- python-dotenv
 scripts: []
 skip:
 - docs

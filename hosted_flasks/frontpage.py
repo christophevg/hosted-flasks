@@ -16,7 +16,7 @@ logger.info(f"using template_folder: {TEMPLATE_FOLDER}")
 
 app = Flask("hosted-flasks", template_folder=TEMPLATE_FOLDER)
 
-apps = {}
+apps = []
 
 @app.route("/")
 def show_frontpage():
