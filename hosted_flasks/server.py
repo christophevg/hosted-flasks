@@ -1,5 +1,4 @@
 import logging
-import os
 
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
@@ -10,8 +9,7 @@ logger = logging.getLogger(__name__)
 
 # load modules/apps dynamically
 
-APPS_FOLDER = os.environ.get("HOSTED_FLASKS_APPS_FOLDER", "apps")
-apps = scanner.find_apps(APPS_FOLDER)
+apps = scanner.find_apps()
 frontpage.apps = apps
 
 class DomainDispatcher:

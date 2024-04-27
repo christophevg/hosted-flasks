@@ -1,1 +1,1 @@
-RUN_CMD=gunicorn hosted_flasks.server:app
+RUN_CMD=HOSTED_FLASKS_APPS_FOLDER=apps gunicorn hosted_flasks.server:app
