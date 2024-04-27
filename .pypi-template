@@ -7,7 +7,8 @@ classifiers:
 - 'Environment :: Web Environment'
 - 'Intended Audience :: Developers'
 - 'License :: OSI Approved :: MIT License'
-console_scripts: []
+console_scripts:
+- hosted-flasks=hosted_flasks.__main__:cli
 first_year_of_publication: '2024'
 github_account: christophevg
 github_repo_name: hosted-flasks

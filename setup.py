@@ -26,7 +26,10 @@ INSTALL_REQUIRES = [
   
 ]
 ENTRY_POINTS = {
-  
+  "console_scripts" : [
+    "hosted-flasks=hosted_flasks.__main__:cli",
+    
+  ]
 }
 SCRIPTS = [
   
