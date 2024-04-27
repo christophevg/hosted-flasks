@@ -18,8 +18,7 @@ class DomainDispatcher:
     self.default = default
 
   def __call__(self, environ, start_response):
-    host = environ['HTTP_HOST'].split(":")[0]
-    return self.apps.get(host, self.default)(environ, start_response)
+    return self.apps.get(environ["HTTP_HOST"], self.default)(environ, start_response)
 
 # combine the apps with the frontpage
 
