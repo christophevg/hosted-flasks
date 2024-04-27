@@ -1,3 +1,9 @@
+# ruff: noqa: E402
+# needed to avoid
+# RuntimeError: Working outside of application context.
+import eventlet
+eventlet.monkey_patch()
+
 import logging
 
 import os

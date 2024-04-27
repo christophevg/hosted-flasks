@@ -23,6 +23,7 @@ CLASSIFIERS      = [
 INSTALL_REQUIRES = [
   "Flask",
   "python-dotenv",
+  "eventlet",
   
 ]
 ENTRY_POINTS = {
