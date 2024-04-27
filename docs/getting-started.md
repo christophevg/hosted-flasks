@@ -10,14 +10,14 @@ Typical usage:
 Now create one or more flask apps, each in their own module/folder:
 
 ```console
-% tree .                     
+% tree -a .
 .
 ├── backend
+│   ├── .env
 │   └── __init__.py
-├── frontend
-│   └── __init__.py
-└── templates
-    └── frontpage.html
+└── frontend
+    ├── .env
+    └── __init__.py
 ```
 
 For example containing the minimal Hello World Flask application:
@@ -33,6 +33,16 @@ def hello_world():
   return "Hello My Backend"
 ```
 
+For each application you want to serve as a Hosted Flask, add a `.env` file with some minimal configuration:
+
+```console
+% cat backend/.env 
+HOSTED_FLASKS_PATH=/backend
+HOSTED_FLASKS_HOSTNAME=backend.localhost
+```
+
+This configuration tells Hosted Flasks how this application should be served. In this case it is both served from a path on the default application (`/backend`), as well as on a custom hostname (`backend.localhost`).
+
 Optionally, but highly recommended: set up a virtual environment.
 
 ```console
@@ -40,16 +50,23 @@ Optionally, but highly recommended: set up a virtual environment.
 % pyenv local my_apps
 ```
 
-Install `hosted-flasks` and `gunicorn` (or your other favorite WSGI server)
+Install `hosted-flasks` and `gunicorn` (or your other favorite WSGI server) and start the Hosted Flasks server app:
 
 ```console
 % pip install hosted_flasks gunicorn
 
-% HOSTED_FLASKS_APPS_FOLDER=. gunicorn hosted_flask.server:app
-[2024-03-13 10:08:55 +0100] [80171] [INFO] Starting gunicorn 21.2.0
-[2024-03-13 10:08:55 +0100] [80171] [INFO] Listening at: http://127.0.0.1:8000 (80171)
-[2024-03-13 10:08:55 +0100] [80171] [INFO] Using worker: sync
-[2024-03-13 10:08:55 +0100] [80198] [INFO] Booting worker with pid: 80198
-[hosted_flasks] [INFO] loading frontend
-[hosted_flasks] [INFO] loading backend
+% gunicorn hosted_flasks.server:app
+[2024-04-27 11:27:25 +0200] [86515] [INFO] Starting gunicorn 22.0.0
+[2024-04-27 11:27:25 +0200] [86515] [INFO] Listening at: http://127.0.0.1:8000 (86515)
+[2024-04-27 11:27:25 +0200] [86515] [INFO] Using worker: sync
+[2024-04-27 11:27:25 +0200] [86542] [INFO] Booting worker with pid: 86542
+[hosted_flasks.scanner] [INFO] 👀 looking for apps in .
+[hosted_flasks.scanner] [INFO] 🌎 imported frontend
+[hosted_flasks.scanner] [INFO] 🌎 imported backend
+[hosted_flasks.server] [INFO] ✅ 2 hosted flasks up & running...
 ```
+
+You can now visit your backend Flask app from e.g.
+
+* [http://localhost:8000/backend](http://localhost:8000/backend)
+* [http://backend.localhost:8000](http://backend.localhost:8000)
