@@ -17,6 +17,27 @@ app = Flask(__name__)
 def hello_world():
   return "Hello World"  
 """)
+    env = folder / ".env"
+    env.write_text("HOSTED_FLASKS_PATH=/hello")
+
+  apps = find_apps(tmp_path)
+  assert len(apps) == 2
+  assert [ app.name for app in apps ] == [ "app_1", "app_2" ]
+
+  # add 1 valid Flask app that isn't configured to be served
+  folder = tmp_path / "unserved"
+  folder.mkdir()
+  init = folder / "__init__.py"
+  init.write_text("""
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello_world():
+  return "Hello World"  
+""")
+
   apps = find_apps(tmp_path)
   assert len(apps) == 2
   assert [ app.name for app in apps ] == [ "app_1", "app_2" ]
