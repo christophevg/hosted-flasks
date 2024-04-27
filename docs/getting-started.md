@@ -50,12 +50,12 @@ Optionally, but highly recommended: set up a virtual environment.
 % pyenv local my_apps
 ```
 
-Install `hosted-flasks` and `gunicorn` (or your other favorite WSGI server) and start the Hosted Flasks server app:
+Install `hosted-flasks`, `gunicorn` and `eventlet` (or your other favorite WSGI server) and start the Hosted Flasks server app:
 
 ```console
-% pip install hosted_flasks gunicorn
+% pip install hosted_flasks gunicorn eventlet
 
-% gunicorn hosted_flasks.server:app
+% gunicorn -k eventlet -w 1 hosted_flasks.server:app
 [2024-04-27 11:27:25 +0200] [86515] [INFO] Starting gunicorn 22.0.0
 [2024-04-27 11:27:25 +0200] [86515] [INFO] Listening at: http://127.0.0.1:8000 (86515)
 [2024-04-27 11:27:25 +0200] [86515] [INFO] Using worker: sync
@@ -70,3 +70,7 @@ You can now visit your backend Flask app from e.g.
 
 * [http://localhost:8000/backend](http://localhost:8000/backend)
 * [http://backend.localhost:8000](http://backend.localhost:8000)
+
+And when visiting the root [http://localhost:8000](http://localhost:8000) you are presented with a frontpage listing the Hosted Flasks with links to their hosted locations:
+
+![Hosted Flasks Frontpage](_static/frontpage.png)
