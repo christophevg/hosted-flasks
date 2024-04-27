@@ -3,6 +3,9 @@ import os
 
 from flask import Flask
 
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
 # setup logging to stdout
 LOG_LEVEL = os.environ.get("LOG_LEVEL") or "INFO"
 FORMAT    = "[%(name)s] [%(levelname)s] %(message)s"
@@ -14,9 +17,12 @@ logging.getLogger().handlers[0].setFormatter(formatter)
 
 logger = logging.getLogger(__name__)
 
+# access personalized environment variables without the prefix
+NAME = os.environ.get("NAME")
+
 # create app
 app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
-  return "Hello Backend"
+  return f"Hello {NAME}"

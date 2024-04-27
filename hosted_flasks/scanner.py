@@ -1,14 +1,5 @@
-# ruff: noqa: E402
-# needed to avoid
-# RuntimeError: Working outside of application context.
-import eventlet
-eventlet.monkey_patch()
-
 import logging
 
-import os
-
-from pathlib import Path
 import importlib.util
 import sys
 from dotenv import dotenv_values
@@ -17,9 +8,9 @@ from dataclasses import dataclass, field
 
 from flask import Flask
 
-logger = logging.getLogger(__name__)
+from hosted_flasks import config
 
-APPS_FOLDER = Path(os.environ.get("HOSTED_FLASKS_APPS_FOLDER", Path())).resolve()
+logger = logging.getLogger(__name__)
 
 @dataclass
 class HostedFlask:
@@ -28,13 +19,13 @@ class HostedFlask:
   hostname: str = None
   path    : str = None
 
-def find_apps(apps_folder=APPS_FOLDER):
+def find_apps():
   """
   detects Flask apps in the given location
   """
-  logger.info(f"👀 looking for apps in {apps_folder}")
+  logger.info(f"👀 looking for apps in {config.apps_folder}")
   apps = []
-  for folder in Path(apps_folder).iterdir():
+  for folder in config.apps_folder.iterdir():
     if folder.is_dir():
       try:
         spec = importlib.util.spec_from_file_location(folder.name, folder / "__init__.py")

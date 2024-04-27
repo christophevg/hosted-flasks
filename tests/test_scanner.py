@@ -1,7 +1,10 @@
+from hosted_flasks import config
 from hosted_flasks.scanner import find_apps
 
 def test_app_detection(tmp_path):
-  assert find_apps(tmp_path) == []
+  config.apps_folder = tmp_path
+  
+  assert find_apps() == []
 
   # create 2 miminal apps
   for app_name in [ "app_1", "app_2" ]:
@@ -20,7 +23,7 @@ def hello_world():
     env = folder / ".env"
     env.write_text("HOSTED_FLASKS_PATH=/hello")
 
-  apps = find_apps(tmp_path)
+  apps = find_apps()
   assert len(apps) == 2
   assert [ app.name for app in apps ] == [ "app_1", "app_2" ]
 
@@ -38,7 +41,7 @@ def hello_world():
   return "Hello World"  
 """)
 
-  apps = find_apps(tmp_path)
+  apps = find_apps()
   assert len(apps) == 2
   assert [ app.name for app in apps ] == [ "app_1", "app_2" ]
 
@@ -46,7 +49,7 @@ def hello_world():
   dummy = tmp_path / "dummy"
   dummy.mkdir()
 
-  apps = find_apps(tmp_path)
+  apps = find_apps()
   assert len(apps) == 2
   assert [ app.name for app in apps ] == [ "app_1", "app_2" ]
   
@@ -54,6 +57,6 @@ def hello_world():
   init = dummy / "__init__.py"
   init.write_text("# nothing here")
 
-  apps = find_apps(tmp_path)
+  apps = find_apps()
   assert len(apps) == 2
   assert [ app.name for app in apps ] == [ "app_1", "app_2" ]
