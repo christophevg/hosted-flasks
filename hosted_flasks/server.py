@@ -28,3 +28,5 @@ app = DomainDispatcher({ app.hostname : app.handler for app in apps },
     app.path : app.handler for app in apps
   })
 )
+
+logger.info(f"✅ {len(apps)} hosted flasks up & running...")
