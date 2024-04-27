@@ -5,8 +5,8 @@
 - [x] load and serve apps from a subfolder path
 - [x] frontpage with links to apps in subfolders paths
 - [x] load and serve apps from a hostname
-- [ ] frontpage with links to apps on hostname
+- [x] frontpage with links to apps on hostname
 - [ ] use app marked as default in stead of default frontpage
 - [ ] provide tools for apps
-  - [ ] for working with "local" environments
+  - [x] for working with "local" environments
   - [ ] for working with subfolder paths vs absolute paths on hostname
