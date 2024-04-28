@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yaml
 
-import importlib.util
+from importlib.util import spec_from_file_location, module_from_spec
 
 from dataclasses import dataclass, field
 from typing import Union
@@ -23,6 +23,7 @@ class HostedFlask:
   src     : Union[str, Path]
   path    : str   = None
   hostname: str   = None
+  app     : str   = "app"
   handler : Flask = field(repr=False, default=None)
 
   def __post_init__(self):
@@ -43,26 +44,36 @@ class HostedFlask:
       
     # without a handler, we remove ourself from the apps
     if not self.handler:
-      logger.fatal(f"⛔️ an app needs a handler: {self.name}")
+      logger.fatal(f"⛔️ an app needs a handler: {self.src.name}.{self.app}")
       apps.remove(self)
   
   def load_handler(self):
+    parts = self.app.split(":", 1)  # app or name:app or name.sub:app
+    if len(parts) == 1: # only an app object name
+      module = self.src.name  # default module name
+      appname = parts[0]
+    else: # explicit module path and app object name
+      module, appname = parts[0], parts[1]
+  
+    module_path = self.src.parent
+    for submodule in module.split("."):
+      module_path = module_path / submodule
+    
     # load the module, creating the handler flask app
     try:
-      spec = importlib.util.spec_from_file_location(self.src.name, self.src / "__init__.py")
-      mod = importlib.util.module_from_spec(spec)
+      spec = spec_from_file_location(self.src.name, module_path / "__init__.py")
+      mod = module_from_spec(spec)
       sys.modules[self.src.name] = mod
       spec.loader.exec_module(mod)
-    
-      # TODO flask object location from settings
-      self.handler = getattr(mod, "app")
+      # extract the handler from the mod using the appname
+      self.handler = getattr(mod, appname)
     except FileNotFoundError:
-      logger.warning(f"😞 '{self.src.name}' doesn't provide '__init__.py'")
+      logger.warning(f"😞 '{module_path}' doesn't provide '__init__.py'")
     except AttributeError:
-      logger.warning(f"😞 '{self.src.name}' doesn't provide 'app'")
+      logger.warning(f"😞 '{module_path}' doesn't provide flask object: {self.app}")
 
-def add_app(name, src, path=None, hostname=None, handler=None):
-  app = HostedFlask(name, src, path, hostname, handler)
+def add_app(name, src, **kwargs):
+  app = HostedFlask(name, src, **kwargs)
   logger.info(f"🌍 added {app.name}")
 
 def get_apps(config=None, force=False):

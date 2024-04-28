@@ -7,3 +7,8 @@ frontend:
   src: frontend
   path: /frontend
   hostname: frontend.localhost:8000
+
+complex:
+  src: complex
+  app: complex.sub:custom_app
+  path: /complex

@@ -10,7 +10,7 @@
   - [x] consider: changing scanner into loader based on root-level config file
   - [ ] consider: monkeypatching logging.getLogger().handlers[0].setFormatter
 - [ ] use app marked as default in stead of default frontpage
-- [ ] enable more complex app structures, e.g. module.submodule.app
+- [x] enable more complex app structures, e.g. module.submodule.app
 - [ ] provide tools for apps
   - [x] for working with "local" environments
   - [ ] for working with subfolder paths vs absolute paths on hostname
