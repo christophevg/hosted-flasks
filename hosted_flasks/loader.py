@@ -47,6 +47,7 @@ class HostedFlask:
       apps.remove(self)
   
   def load_handler(self):
+    # load the module, creating the handler flask app
     try:
       spec = importlib.util.spec_from_file_location(self.src.name, self.src / "__init__.py")
       mod = importlib.util.module_from_spec(spec)

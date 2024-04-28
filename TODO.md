@@ -14,4 +14,4 @@
 - [ ] provide tools for apps
   - [x] for working with "local" environments
   - [ ] for working with subfolder paths vs absolute paths on hostname
-  - [ ] import app specific .env with prefix by default
+  - [x] import app specific .env with prefix by default

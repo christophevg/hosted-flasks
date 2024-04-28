@@ -26,9 +26,8 @@ def hello_world():
 
   # create a .env
   env = folder / ".env"
-  env.write_text(f"""
-{app_name.upper()}_NAME=AppSpecific
-""")
+  env.write_text("NAME=AppSpecific")
+
   # create a configuration
   config = tmp_path / "hosted-flasks.yaml"
   config.write_text(f"""
@@ -42,5 +41,6 @@ def hello_world():
   assert len(apps) == 1
 
   html = apps[0].handler.test_client().get("/")
-  assert os.environ.get("APP_1_NAME") == "AppSpecific" # loaded by dotenv
+  assert os.environ.get("NAME") is None                # this is replaced with 
+  assert os.environ.get("APP_1_NAME") == "AppSpecific" # this one
   assert html.data == b"Hello AppSpecific"
