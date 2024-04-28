@@ -34,16 +34,17 @@ class Environment(UserDict):
       key = f"{calling_app.upper()}_{key}"
     super().__setitem__(key, value)
 
-  def get(self, key, default=None):
+  def __getitem__(self, key):
     # in case of a call from a hosted flask app, try a prefix first
     calling_app = self._get_calling_app()
     if calling_app:
       app_key = f"{calling_app.upper()}_{key}"
-      value = super().get(app_key, None)
-      if value:
-        return value
+      try:
+        return super().__getitem__(app_key)
+      except KeyError:
+        pass
 
     # fall back to the non-prefixed variable
-    return super().get(key, default)
+    return super().__getitem__(key)
 
 os.environ = Environment(os.environ)
