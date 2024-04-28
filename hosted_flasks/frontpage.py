@@ -6,6 +6,8 @@ from pathlib import Path
 
 from flask import Flask, render_template
 
+from hosted_flasks.loader import get_apps
+
 logger = logging.getLogger(__name__)
 
 FRONTPAGE_FOLDER = os.environ.get("HOSTED_FLASKS_FRONTPAGE_FOLDER", None)
@@ -25,8 +27,6 @@ app = Flask(
 
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
-apps = [] # to be filled externally with apps that are served, see server.py
-
 @app.route("/")
 def show_frontpage():
-  return render_template("index.html", apps=apps)
+  return render_template("index.html", apps=get_apps())

@@ -23,6 +23,7 @@ requires:
 - Flask
 - python-dotenv
 - eventlet
+- pyyaml
 scripts: []
 skip:
 - docs

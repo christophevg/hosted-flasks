@@ -1,0 +1,9 @@
+backend:
+  src: backend
+  path: /backend
+  hostname: backend.localhost:8000
+
+frontend:
+  src: frontend
+  path: /frontend
+  hostname: frontend.localhost:8000

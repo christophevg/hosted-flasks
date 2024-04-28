@@ -24,6 +24,7 @@ INSTALL_REQUIRES = [
   "Flask",
   "python-dotenv",
   "eventlet",
+  "pyyaml",
   
 ]
 ENTRY_POINTS = {

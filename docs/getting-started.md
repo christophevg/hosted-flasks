@@ -7,23 +7,21 @@ Typical usage:
 % cd my_apps
 ```
 
-Now create one or more flask apps, each in their own module/folder:
+First create one or more flask apps, each in their own module/folder:
 
 ```console
-% tree -a .
+% tree .
 .
 ├── backend
-│   ├── .env
 │   └── __init__.py
-└── frontend
-    ├── .env
-    └── __init__.py
+├── frontend
+│   └── __init__.py
+└── hosted-flasks.yaml
 ```
 
-For example containing the minimal Hello World Flask application:
+Each containing for example a minimal Hello World Flask application:
 
-```console
-% cat backend/__init__.py 
+```python
 from flask import Flask
 
 app = Flask(__name__)
@@ -33,37 +31,42 @@ def hello_world():
   return "Hello My Backend"
 ```
 
-For each application you want to serve as a Hosted Flask, add a `.env` file with some minimal configuration:
+Next, we create a YAML configuration file, `hosted-flasks.yaml`, containing the flask apps we want to be served and how we want them to be served:
 
-```console
-% cat backend/.env 
-HOSTED_FLASKS_PATH=/backend
-HOSTED_FLASKS_HOSTNAME=backend.localhost
+```yaml
+backend:
+  src: backend
+  path: /backend
+  hostname: backend.localhost:8000
+
+frontend:
+  src: frontend
+  path: /frontend
+  hostname: frontend.localhost:8000
 ```
 
-This configuration tells Hosted Flasks how this application should be served. In this case it is both served from a path on the default application (`/backend`), as well as on a custom hostname (`backend.localhost`).
+In this case we want both apps served from a path on the default application (`/backend` and `/frontend`), as well as on a custom hostname (`backend.localhost:8000` and `frontend.localhost:8000`).
 
-Optionally, but highly recommended: set up a virtual environment.
+Optionally, but highly recommended 😇, set up a virtual environment:
 
 ```console
 % pyenv virtualenv my_apps
 % pyenv local my_apps
 ```
 
-Install `hosted-flasks`, `gunicorn` and `eventlet` (or your other favorite WSGI server) and start the Hosted Flasks server app:
+Install `hosted-flasks` and `gunicorn` (or your other favorite WSGI server) and start the Hosted Flasks server app:
 
 ```console
-% pip install hosted_flasks gunicorn eventlet
+% pip install hosted-flasks gunicorn
 
 % gunicorn -k eventlet -w 1 hosted_flasks.server:app
-[2024-04-27 11:27:25 +0200] [86515] [INFO] Starting gunicorn 22.0.0
-[2024-04-27 11:27:25 +0200] [86515] [INFO] Listening at: http://127.0.0.1:8000 (86515)
-[2024-04-27 11:27:25 +0200] [86515] [INFO] Using worker: sync
-[2024-04-27 11:27:25 +0200] [86542] [INFO] Booting worker with pid: 86542
-[hosted_flasks.scanner] [INFO] 👀 looking for apps in .
-[hosted_flasks.scanner] [INFO] 🌎 imported frontend
-[hosted_flasks.scanner] [INFO] 🌎 imported backend
-[hosted_flasks.server] [INFO] ✅ 2 hosted flasks up & running...
+[2024-04-28 15:35:46 +0200] [5320] [INFO] Starting gunicorn 22.0.0
+[2024-04-28 15:35:46 +0200] [5320] [INFO] Listening at: http://127.0.0.1:8000 (5320)
+[2024-04-28 15:35:46 +0200] [5320] [INFO] Using worker: eventlet
+[2024-04-28 15:35:46 +0200] [5347] [INFO] Booting worker with pid: 5347
+[2024-04-28 15:35:46 +0200] [5347] [INFO] [hosted_flasks.loader] 🌍 added backend
+[2024-04-28 15:35:46 +0200] [5347] [INFO] [hosted_flasks.loader] 🌍 added frontend
+[2024-04-28 15:35:46 +0200] [5347] [INFO] [hosted_flasks.server] ✅ 2 hosted flasks up & running...
 ```
 
 You can now visit your backend Flask app from e.g.

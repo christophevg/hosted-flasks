@@ -8,7 +8,7 @@ load_dotenv(find_dotenv())
 
 # setup logging to stdout
 LOG_LEVEL = os.environ.get("LOG_LEVEL") or "INFO"
-FORMAT    = "[%(name)s] [%(levelname)s] %(message)s"
+FORMAT    = "[%(asctime)s] [%(process)d] [%(levelname)s] [%(name)s] %(message)s"
 DATEFMT   = "%Y-%m-%d %H:%M:%S %z"
 
 logging.basicConfig(level=LOG_LEVEL, format=FORMAT, datefmt=DATEFMT)
