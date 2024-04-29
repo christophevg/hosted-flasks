@@ -23,23 +23,25 @@ class Environment(UserDict):
   def _get_raw(self, key):
     # utility to access env var without looking up the calling app
     return super().__getitem__(key)  # pragma: no cover
+
+  def _log(self, msg):
+    if self._debug:
+      logger.info(msg) # pragma: no cover
+
   def _get_calling_app(self):
     # walk up the stack to find a frame that originated in one of the hosted
     # flasks. if so, use its name as a prefix for retrieving an app specific
     # version of the environment variable
     frames = inspect.stack()[2:]
     for caller in frames:
-      if self._debug:
-        logger.info(f"matching {caller.filename}")
+      self._log(f"matching {caller.filename}")
       for app in loader.apps: # access apps directly to avoid loop with get_apps
         try:
-          if self._debug:
-            logger.info(f"  against {app.src.parent}")
+          self._log(f"  against {app.src.parent}")
           calling_app = Path(caller.filename).relative_to(app.src.parent).parts[0]
           # we found a frame that originated in a hosted flask app's src
           # the root of this path is the app folder and also the prefix name
-          if self._debug:
-            logger.info(f"  SUCCESS: {calling_app}")
+          self._log(f"  SUCCESS: {calling_app}")
           return calling_app
         except ValueError: # pathlib: does not start with...
           pass
@@ -57,19 +59,16 @@ class Environment(UserDict):
     calling_app = self._get_calling_app()
     if calling_app:
       app_key = f"{calling_app.upper()}_{key}"
-      if self._debug:
-        logger.info(f"  trying to get {app_key}")
+      self._log(f"  trying to get {app_key}")
       try:
         value = super().__getitem__(app_key)
-        if self._debug:
-          logger.info(f"  SUCCESS {app_key} = {value}")
+        self._log(f"  SUCCESS {app_key} = {value}")
         return value
       except KeyError:
         pass
 
     # fall back to the non-prefixed variable
-    if self._debug:
-      logger.info(f"  FAIL: trying {key}")
+    self._log(f"  FAIL: trying {key}")
     try:
       value = super().__getitem__(key)
     except KeyError:
