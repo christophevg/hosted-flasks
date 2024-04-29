@@ -82,6 +82,24 @@ dummy:
   apps = get_apps(config, force=True)
   assert len(apps) == 0
 
+def test_app_that_throws_exception_is_not_loaded(tmp_path):
+  # add dummy implementation, without exposing a Flask object
+  dummy = tmp_path / "dummy"
+  dummy.mkdir()
+  init = dummy / "__init__.py"
+  init.write_text("raise KeyError")
+
+  config = tmp_path / "hosted-flasks.yaml"
+  content = """
+dummy:
+  src: dummy
+  path: /dummy
+"""
+  config.write_text(content)
+  
+  apps = get_apps(config, force=True)
+  assert len(apps) == 0
+
 def test_app_with_not_default_appname(tmp_path):
   app_name = "custom_app"
   folder = tmp_path / app_name
