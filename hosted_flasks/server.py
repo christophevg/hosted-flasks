@@ -31,9 +31,9 @@ class Dispatcher:
     hostname = environ["HTTP_HOST"]
     handler = self.hosts.get(hostname, None)
     if handler:
-      logger.info("🧭 dispatching {hostname} to {handler}")
+      logger.debug(f"🧭 dispatching {hostname} to {handler}")
     else:
-      logger.info("🧭 dispatching locally (no mapping for {hostname})")
+      logger.debug(f"🧭 dispatching locally (no mapping for {hostname})")
       handler = self.paths
     return handler(environ, start_response)
 
