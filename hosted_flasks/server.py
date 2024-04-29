@@ -21,20 +21,35 @@ logger = logging.getLogger(__name__)
 
 # dispatch apps based on path and/or hostname
 
-class DomainDispatcher:
-  def __init__(self, apps, default=None):
-    self.apps    = apps
-    self.default = default
+class Dispatcher:
+  def __init__(self, frontpage, hosts=None, paths=None):
+    self.hosts     = hosts
+    self.paths     = DispatcherMiddleware(frontpage, paths)
 
   def __call__(self, environ, start_response):
-    return self.apps.get(environ["HTTP_HOST"], self.default)(environ, start_response)
+    # first check if we have a hostname mapping
+    hostname = environ["HTTP_HOST"]
+    handler = self.hosts.get(hostname, None)
+    if handler:
+      logger.info("🧭 dispatching {hostname} to {handler}")
+    else:
+      logger.info("🧭 dispatching locally (no mapping for {hostname})")
+      handler = self.paths
+    return handler(environ, start_response)
 
 # combine the apps with the frontpage
 
-app = DomainDispatcher({ app.hostname : app.handler for app in get_apps() },
-  default=DispatcherMiddleware(frontpage.app, {
-    app.path : app.handler for app in get_apps()
-  })
-)
+hosts = { app.hostname : app.handler for app in get_apps() if app.hostname }
+paths = { app.path     : app.handler for app in get_apps() if app.path     }
+
+logger.info("🧭 dispatching domains:")
+for host, handler in hosts.items():
+  logger.info(f"  - {host} : {handler}")
+
+logger.info("🧭 dispatching paths:")
+for host, handler in paths.items():
+  logger.info(f"  - {host} : {handler}")
+
+app = Dispatcher(frontpage.app, hosts=hosts, paths=paths)
 
 logger.info(f"✅ {len(get_apps())} hosted flasks up & running...")
