@@ -20,6 +20,9 @@ class Environment(UserDict):
     self._debug = False
     super().__init__(*args, **kwargs)
 
+  def _get_raw(self, key):
+    # utility to access env var without looking up the calling app
+    return super().__getitem__(key)  # pragma: no cover
   def _get_calling_app(self):
     # walk up the stack to find a frame that originated in one of the hosted
     # flasks. if so, use its name as a prefix for retrieving an app specific
