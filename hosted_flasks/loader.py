@@ -71,12 +71,12 @@ class HostedFlask:
       logger.warning(f"😞 '{module_path}' doesn't provide '__init__.py'")
     except AttributeError:
       logger.warning(f"😞 '{module_path}' doesn't provide flask object: {self.app}")
-    except Exception as ex:
-      logger.warning(f"😞 '{module_path}' failed to load due to {ex}")
+    except Exception:
+      logger.exception(f"😞 '{module_path}' failed to load due to")
 
 def add_app(name, src, **kwargs):
   app = HostedFlask(name, src, **kwargs)
-  logger.info(f"🌍 added {app.name}")
+  logger.info(f"🌍 loaded app: {app.name}")
 
 def get_apps(config=None, force=False):
   global apps
