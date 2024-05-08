@@ -10,8 +10,10 @@ import yaml
 from importlib.util import spec_from_file_location, module_from_spec
 
 from dataclasses import dataclass, field
-from typing import Union
+from typing import Union, Dict
 from flask import Flask
+
+from hosted_flasks.monkeypatch import Environment
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +27,7 @@ class HostedFlask:
   hostname: str   = None
   app     : str   = "app"
   handler : Flask = field(repr=False, default=None)
+  environ : Dict  = None
 
   def __post_init__(self):
     if not self.path and not self.hostname:
@@ -55,10 +58,14 @@ class HostedFlask:
     else: # explicit module path and app object name
       module, appname = parts[0], parts[1]
   
+    # construct filepath from module path on top of the parent root path
     module_path = self.src.parent
     for submodule in module.split("."):
       module_path = module_path / submodule
-    
+
+    # create a fresh monkeypatched environment scoped to the app name
+    self.environ = Environment.scope(self.src.name)
+
     # load the module, creating the handler flask app
     try:
       spec = spec_from_file_location(self.src.name, module_path / "__init__.py")

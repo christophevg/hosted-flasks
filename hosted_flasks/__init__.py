@@ -1,4 +1,4 @@
-__version__ = "0.0.9"
+__version__ = "0.0.10"
 
 # ruff: noqa: E402
 
@@ -11,7 +11,3 @@ eventlet.monkey_patch()
 from dotenv import load_dotenv
 load_dotenv()
 load_dotenv(".env.local")
-
-# apply some patches to allow existing applications to work as transparantly
-# as possible
-from hosted_flasks import monkeypatch # noqa

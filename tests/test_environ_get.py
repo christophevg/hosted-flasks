@@ -1,5 +1,3 @@
-import os
-
 from hosted_flasks.loader import get_apps
 
 def test_app_specific_environment_variable(tmp_path):
@@ -40,7 +38,9 @@ def hello_world():
   apps = get_apps(config, force=True)
   assert len(apps) == 1
 
-  html = apps[0].handler.test_client().get("/")
-  assert os.environ.get("NAME") is None                # this is replaced with 
-  assert os.environ.get("APP_1_NAME") == "AppSpecific" # this one
+  app = apps[0]
+
+  html = app.handler.test_client().get("/")
+  assert app.environ.get("NAME") == "AppSpecific"
+  assert app.environ.get("APP_1_NAME") == "AppSpecific"
   assert html.data == b"Hello AppSpecific"

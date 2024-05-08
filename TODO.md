@@ -8,10 +8,16 @@
 - [x] frontpage with links to apps on hostname
 - [x] move hosted flasks configuration from .env to root-level config file
   - [x] consider: changing scanner into loader based on root-level config file
-  - [ ] consider: monkeypatching logging.getLogger().handlers[0].setFormatter
-- [ ] use app marked as default in stead of default frontpage
 - [x] enable more complex app structures, e.g. module.submodule.app
-- [ ] provide tools for apps
+- [x] provide tools for apps
   - [x] for working with "local" environments
-  - [ ] for working with subfolder paths vs absolute paths on hostname
   - [x] import app specific .env with prefix by default
+- [x] load own .env(.local)
+- [ ] status page
+- [ ] improve code/testability more
+
+## later 😇
+
+- [ ] use app marked as default in stead of default frontpage
+- [ ] tooling for working with subfolder paths vs absolute paths on hostname
+- [ ] consider: monkeypatching logging.getLogger().handlers[0].setFormatter
