@@ -1,3 +1,4 @@
+import os
 import logging
 
 from collections import UserDict
@@ -7,20 +8,29 @@ logger = logging.getLogger(__name__)
 # os.environ.get
 
 DONT_UNLOAD_MODULES = [
-  "warnings", "builtins", "sys", "_pytest", "flask", "hosted_flasks", "eventlet"
+  "importlib", "warnings", "builtins", "sys", "_pytest", "eventlet",
+  "flask", "hosted_flasks",
+  "cryptography"
 ]
 
+# keep a copy of the environment before we use any scoped environments
+# it contains optionally already scoped variables, e.g. not loaded explicitly
+# by the scoped modules
+base_environ = os.environ.copy()
+
 class Environment(UserDict):
-  def __init__(self, scope, current_environ=None, debug=False):
+  def __init__(self, scope, debug=False):
     self._scope = scope.upper()
     self._debug = debug
-    super().__init__(current_environ)
+    super().__init__()
+    # explicitly use the original __setitem__, else we might end up with double
+    # prefixes
+    for k, v in base_environ.items():
+      super().__setitem__(k, v)
 
   @classmethod
   def scope(cls, scope, debug=False):
     logger.info(f"🔧 creating fresh os.environ, for {scope}")
-    import os
-    current_environ = os.environ.copy()
     import sys
     # remove modules, with some exceptions ;-)
     for mod_name in list(sys.modules.keys()):
@@ -32,7 +42,7 @@ class Environment(UserDict):
       if not keep:
         sys.modules.pop(mod_name, None) 
     import os
-    patched_environ = cls(scope, current_environ, debug=debug)
+    patched_environ = cls(scope, debug=debug)
     os.environ = patched_environ
     return patched_environ
 
@@ -53,7 +63,7 @@ class Environment(UserDict):
   def __getitem__(self, key):
     # try a prefix first
     app_key = f"{self._scope}_{key}"
-    self._log(f"  trying to get {app_key} for {key}")
+    self._log(f"  trying to get {app_key} in stead of {key}")
     try:
       value = super().__getitem__(app_key)
       self._log(f"  SUCCESS {app_key} = {value}")
