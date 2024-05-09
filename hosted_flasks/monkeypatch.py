@@ -20,7 +20,7 @@ base_environ = os.environ.copy()
 
 class Environment(UserDict):
   def __init__(self, scope, debug=False):
-    self._scope = scope.upper()
+    self._scope = scope.upper().replace("-", "_") # ensure proper env var name
     self._debug = debug
     super().__init__()
     # explicitly use the original __setitem__, else we might end up with double
