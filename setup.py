@@ -25,6 +25,7 @@ INSTALL_REQUIRES = [
   "python-dotenv",
   "eventlet",
   "pyyaml",
+  "humanize",
   
 ]
 ENTRY_POINTS = {

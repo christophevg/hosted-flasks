@@ -13,6 +13,8 @@
   - [x] for working with "local" environments
   - [x] import app specific .env with prefix by default
 - [x] load own .env(.local)
+- [x] add more information
+  - [x] last updated timestamp
 - [ ] status page
 - [ ] improve code/testability more
 

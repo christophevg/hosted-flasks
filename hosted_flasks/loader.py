@@ -4,6 +4,9 @@ import os
 import sys
 
 from pathlib import Path
+from datetime import datetime
+import humanize
+import markdown
 
 import yaml
 
@@ -21,13 +24,7 @@ apps = []
 
 @dataclass
 class HostedFlask:
-  name    : str
-  src     : Union[str, Path]
-  path    : str   = None
-  hostname: str   = None
-  app     : str   = "app"
-  handler : Flask = field(repr=False, default=None)
-  environ : Dict  = None
+  last_updated : str   = None
 
   def __post_init__(self):
     if not self.path and not self.hostname:
@@ -99,7 +96,14 @@ def get_apps(config=None, force=False):
       with open(config) as fp:
         for name, settings in yaml.safe_load(fp).items():
           src = config.parent / settings.pop("src")
+          settings["last_updated"] = get_last_updated(name)
           add_app(name, src, **settings)
     except FileNotFoundError:
       raise ValueError(f"💀 I need a config file. Tried: {config}")
   return apps
+
+def get_last_updated(name):
+  files = list(Path(name).rglob("*"))
+  last_mtime = max( [ p.lstat().st_mtime for p in files ] )
+  last_updated = datetime.now() - datetime.fromtimestamp(last_mtime)
+  return humanize.naturaltime(last_updated)
