@@ -26,4 +26,7 @@
 
 - [ ] use app marked as default in stead of default frontpage
 - [ ] tooling for working with subfolder paths vs absolute paths on hostname
-- [ ] consider: monkeypatching logging.getLogger().handlers[0].setFormatter
+- [ ] consider: monkey patching logging.getLogger().handlers[0].setFormatter
+- [ ] all info as json (?)
+  - [ ] default frontpage -> dynamic
+- [ ] usage statistics?
