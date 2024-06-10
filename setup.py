@@ -26,6 +26,7 @@ INSTALL_REQUIRES = [
   "eventlet",
   "pyyaml",
   "humanize",
+  "markdown",
   
 ]
 ENTRY_POINTS = {

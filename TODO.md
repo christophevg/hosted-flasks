@@ -15,6 +15,7 @@
 - [x] load own .env(.local)
 - [x] add more information
   - [x] last updated timestamp
+  - [x] README/description (markdown)
 - [ ] status page
 - [ ] improve code/testability more
 

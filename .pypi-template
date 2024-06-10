@@ -25,6 +25,7 @@ requires:
 - eventlet
 - pyyaml
 - humanize
+- markdown
 scripts: []
 skip:
 - docs

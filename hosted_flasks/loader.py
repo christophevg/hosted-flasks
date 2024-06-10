@@ -25,6 +25,7 @@ apps = []
 @dataclass
 class HostedFlask:
   last_updated : str   = None
+  description  : str   = None
 
   def __post_init__(self):
     if not self.path and not self.hostname:
@@ -97,6 +98,7 @@ def get_apps(config=None, force=False):
         for name, settings in yaml.safe_load(fp).items():
           src = config.parent / settings.pop("src")
           settings["last_updated"] = get_last_updated(name)
+          settings["description"] = markdown.markdown(settings.pop("description", ""))
           add_app(name, src, **settings)
     except FileNotFoundError:
       raise ValueError(f"💀 I need a config file. Tried: {config}")
