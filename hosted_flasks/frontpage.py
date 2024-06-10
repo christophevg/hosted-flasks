@@ -4,7 +4,7 @@ import os
 
 from pathlib import Path
 
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 
 from hosted_flasks.loader import get_apps
 
@@ -30,3 +30,8 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 @app.route("/")
 def show_frontpage():
   return render_template("index.html", apps=get_apps())
+
+@app.route("/hosted/<path:filename>")
+def send_frontpage_static(filename):
+  # static folder from root of app that uses hosted flasks to serve apps
+  return send_from_directory("", filename)
