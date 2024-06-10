@@ -14,7 +14,9 @@
   - [x] import app specific .env with prefix by default
 - [x] load own .env(.local)
 - [x] add more information
+  - [x] link to GitHub repo
   - [x] last updated timestamp
+  - [x] image
   - [x] README/description (markdown)
 - [ ] status page
 - [ ] improve code/testability more

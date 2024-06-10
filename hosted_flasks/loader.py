@@ -24,8 +24,20 @@ apps = []
 
 @dataclass
 class HostedFlask:
+  name         : str
+  src          : Union[str, Path]
+  path         : str   = None
+  hostname     : str   = None
+  app          : str   = "app"
+  handler      : Flask = field(repr=False, default=None)
+  environ      : Dict  = None
+
   last_updated : str   = None
+  title        : str   = None
   description  : str   = None
+  image        : str   = None
+  github       : str   = None
+  docs         : str   = None
 
   def __post_init__(self):
     if not self.path and not self.hostname:
