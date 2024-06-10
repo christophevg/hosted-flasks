@@ -13,6 +13,7 @@
   - [x] for working with "local" environments
   - [x] import app specific .env with prefix by default
 - [x] load own .env(.local)
+- [x] apply bootstrap
 - [x] add more information
   - [x] link to GitHub repo
   - [x] last updated timestamp
