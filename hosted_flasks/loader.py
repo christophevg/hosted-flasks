@@ -118,6 +118,8 @@ def get_apps(config=None, force=False):
 
 def get_last_updated(name):
   files = list(Path(name).rglob("*"))
-  last_mtime = max( [ p.lstat().st_mtime for p in files ] )
-  last_updated = datetime.now() - datetime.fromtimestamp(last_mtime)
-  return humanize.naturaltime(last_updated)
+  if files:
+    last_mtime = max( [ p.lstat().st_mtime for p in files ] )
+    last_updated = datetime.now() - datetime.fromtimestamp(last_mtime)
+    return humanize.naturaltime(last_updated)
+  return None
