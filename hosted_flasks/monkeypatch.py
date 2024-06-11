@@ -8,7 +8,8 @@ logger = logging.getLogger(__name__)
 # os.environ.get
 
 DONT_UNLOAD_MODULES = [
-  "importlib", "warnings", "builtins", "sys", "_pytest", "eventlet",
+  "importlib", "warnings", "builtins", "sys", "_pytest", "codecs",
+  "eventlet",
   "flask", "hosted_flasks",
   "cryptography"
 ]
