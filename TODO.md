@@ -19,10 +19,13 @@
   - [x] last updated timestamp
   - [x] image
   - [x] README/description (markdown)
-- [ ] status page
+
+## version 0.1.x
+
+- [ ] status page/indicators (depends on health url)
 - [ ] improve code/testability more
 
-## later 😇
+## unprioritized backlog 😇
 
 - [ ] use app marked as default in stead of default frontpage
 - [ ] tooling for working with subfolder paths vs absolute paths on hostname
@@ -30,3 +33,4 @@
 - [ ] all info as json (?)
   - [ ] default frontpage -> dynamic
 - [ ] usage statistics?
+- [ ] logging?
