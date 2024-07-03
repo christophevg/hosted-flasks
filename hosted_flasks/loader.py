@@ -17,6 +17,8 @@ from typing import Union, Dict
 from flask import Flask
 
 from hosted_flasks.monkeypatch import Environment
+from hosted_flasks.statistics  import track
+
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +33,8 @@ class HostedFlask:
   app          : str   = "app"
   handler      : Flask = field(repr=False, default=None)
   environ      : Dict  = None
+  track        : bool  = False
 
-  last_updated : str   = None
   title        : str   = None
   description  : str   = None
   image        : str   = None
@@ -84,6 +86,9 @@ class HostedFlask:
       spec.loader.exec_module(mod)
       # extract the handler from the mod using the appname
       self.handler = getattr(mod, appname)
+      # install a tracker
+      if self.track:
+        track(self)
     except FileNotFoundError:
       logger.warning(f"😞 '{module_path}' doesn't provide '__init__.py'")
     except AttributeError:
@@ -109,17 +114,8 @@ def get_apps(config=None, force=False):
       with open(config) as fp:
         for name, settings in yaml.safe_load(fp).items():
           src = config.parent / settings.pop("src")
-          settings["last_updated"] = get_last_updated(name)
           settings["description"] = markdown.markdown(settings.pop("description", ""))
           add_app(name, src, **settings)
     except FileNotFoundError:
       raise ValueError(f"💀 I need a config file. Tried: {config}")
   return apps
-
-def get_last_updated(name):
-  files = list(Path(name).rglob("*"))
-  if files:
-    last_mtime = max( [ p.lstat().st_mtime for p in files ] )
-    last_updated = datetime.now() - datetime.fromtimestamp(last_mtime)
-    return humanize.naturaltime(last_updated)
-  return None

@@ -1,26 +1,28 @@
-# TODO
+# TODO & ChangeLog All-in-One
 
-## Now
+## versionless
 
 - [x] update documentation, make it up to date with 0.1.0 version
   - [ ] extend documentation with all features, beyond getting started
 
-## version 0.1.x
+## unprioritized backlog 😇
 
+- [ ] persist hits count to some recoverable storage on restart
 - [ ] add support for health url
   - [ ] status page/indicators (depends on health url)
 - [ ] improve code/testability more
 - [ ] add tags with categories
-
-## unprioritized backlog 😇
-
 - [ ] use app marked as default in stead of default frontpage
 - [ ] tooling for working with subfolder paths vs absolute paths on hostname
 - [ ] consider: monkey patching logging.getLogger().handlers[0].setFormatter
 - [ ] all info as json (?)
   - [ ] default frontpage -> dynamic
-- [ ] usage statistics?
-- [ ] centralized logging? where to, to avoid too much overhead with every call
+
+## version 0.1.1
+
+- [x] usage statistics
+- [x] centralized access logging -> added in debug, render.com has access logs
+- [x] deprecate "last updated" timestamp for now, it doesn't seem easy to get
 
 ## version 0.1.0
 
