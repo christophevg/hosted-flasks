@@ -1,5 +1,27 @@
 # TODO
 
+## Now
+
+- [x] update documentation, make it up to date with 0.1.0 version
+  - [ ] extend documentation with all features, beyond getting started
+
+## version 0.1.x
+
+- [ ] add support for health url
+  - [ ] status page/indicators (depends on health url)
+- [ ] improve code/testability more
+- [ ] add tags with categories
+
+## unprioritized backlog 😇
+
+- [ ] use app marked as default in stead of default frontpage
+- [ ] tooling for working with subfolder paths vs absolute paths on hostname
+- [ ] consider: monkey patching logging.getLogger().handlers[0].setFormatter
+- [ ] all info as json (?)
+  - [ ] default frontpage -> dynamic
+- [ ] usage statistics?
+- [ ] centralized logging? where to, to avoid too much overhead with every call
+
 ## version 0.1.0
 
 - [x] load and serve apps from a subfolder path
@@ -19,18 +41,3 @@
   - [x] last updated timestamp
   - [x] image
   - [x] README/description (markdown)
-
-## version 0.1.x
-
-- [ ] status page/indicators (depends on health url)
-- [ ] improve code/testability more
-
-## unprioritized backlog 😇
-
-- [ ] use app marked as default in stead of default frontpage
-- [ ] tooling for working with subfolder paths vs absolute paths on hostname
-- [ ] consider: monkey patching logging.getLogger().handlers[0].setFormatter
-- [ ] all info as json (?)
-  - [ ] default frontpage -> dynamic
-- [ ] usage statistics?
-- [ ] logging?
