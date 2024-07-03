@@ -3,7 +3,6 @@ import logging
 from datetime import datetime
 import humanize
 
-from flask import current_app
 from flask.globals import request_ctx
 
 logger = logging.getLogger(__name__)
@@ -31,7 +30,6 @@ class Tracker:
 
   def track_request(self, request):
     if request.endpoint in self.hostedflask.track:
-      static_url_path = current_app.static_url_path
       analytics = {
         "hosted-flask": self.hostedflask.name,
         "args"        : request.args,

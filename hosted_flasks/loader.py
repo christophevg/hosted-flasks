@@ -4,8 +4,6 @@ import os
 import sys
 
 from pathlib import Path
-from datetime import datetime
-import humanize
 import markdown
 
 import yaml
