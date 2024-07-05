@@ -11,7 +11,7 @@ DONT_UNLOAD_MODULES = [
   "importlib", "warnings", "builtins", "sys", "_pytest", "codecs",
   "eventlet",
   "flask", "hosted_flasks",
-  "cryptography"
+  "cryptography", "bcrypt"
 ]
 
 # keep a copy of the environment before we use any scoped environments
