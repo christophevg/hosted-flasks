@@ -6,7 +6,7 @@ from pathlib import Path
 
 from flask import Flask, render_template, send_from_directory
 
-from hosted_flasks.loader import get_apps
+from hosted_flasks.loader import get_apps, get_config
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,12 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 @app.route("/")
 def show_frontpage():
-  return render_template("index.html", apps=get_apps())
+  return render_template(
+    "index.html",
+    apps=get_apps(),
+    title=get_config()["title"],
+    description=get_config()["description"]
+  )
 
 @app.route("/hosted/<path:filename>")
 def send_frontpage_static(filename):

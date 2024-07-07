@@ -117,26 +117,33 @@ class HostedFlask:
     except Exception:
       logger.exception(f"😞 '{self.module_path}' failed to load due to")
 
-def add_app(name, src, **kwargs):
-  app = HostedFlask(name, src, **kwargs)
-  logger.info(f"🌍 loaded app: {app.name}")
+def get_config(config=None):
+  if not config:
+    config = os.environ.get("HOSTED_FLASKS_CONFIG", Path() / "hosted-flasks.yaml")
+
+  try:
+    with open(config) as fp:
+      return yaml.safe_load(fp)
+  except FileNotFoundError:
+    raise ValueError(f"💀 I need a config file. Tried: {config}")
 
 def get_apps(config=None, force=False):
   global apps
+
+  if not config:
+    config = os.environ.get("HOSTED_FLASKS_CONFIG", Path() / "hosted-flasks.yaml")
 
   if force:
     apps.clear()
 
   # lazy load the apps
   if not apps:
-    if not config:
-      config = os.environ.get("HOSTED_FLASKS_CONFIG", Path() / "hosted-flasks.yaml")
-    try:
-      with open(config) as fp:
-        for name, settings in yaml.safe_load(fp).items():
-          src = config.parent / settings.pop("src")
-          settings["description"] = markdown.markdown(settings.pop("description", ""))
-          add_app(name, src, **settings)
-    except FileNotFoundError:
-      raise ValueError(f"💀 I need a config file. Tried: {config}")
+    for name, settings in get_config(config)["apps"].items():
+      src = config.parent / settings.pop("src")
+      settings["description"] = markdown.markdown(settings.pop("description", ""))
+      add_app(name, src, **settings)
   return apps
+
+def add_app(name, src, **kwargs):
+  app = HostedFlask(name, src, **kwargs)  # adds self to global apps list
+  logger.info(f"🌍 loaded app: {app.name}")

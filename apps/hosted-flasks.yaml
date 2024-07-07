@@ -1,14 +1,19 @@
-backend:
-  src: backend
-  path: /backend
-  hostname: backend.localhost:8000
+title: Hosted Flasks
+description: |
+  With Hosted Flasks you can host multiple Flask apps from a single top-level
+  Flask app.
+apps:
+  backend:
+    src: backend
+    path: /backend
+    hostname: backend.localhost:8000
 
-frontend:
-  src: frontend
-  path: /frontend
-  hostname: frontend.localhost:8000
+  frontend:
+    src: frontend
+    path: /frontend
+    hostname: frontend.localhost:8000
 
-complex:
-  src: complex
-  app: complex.sub:custom_app
-  path: /complex
+  complex:
+    src: complex
+    app: complex.sub:custom_app
+    path: /complex
