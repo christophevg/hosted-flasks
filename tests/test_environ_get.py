@@ -29,10 +29,11 @@ def hello_world():
   # create a configuration
   config = tmp_path / "hosted-flasks.yaml"
   config.write_text(f"""
-{app_name}:
-  src: {app_name}
-  path: /{app_name}
-  hostname: {app_name}
+apps:
+  {app_name}:
+    src: {app_name}
+    path: /{app_name}
+    hostname: {app_name}
 """)
 
   apps = get_apps(config, force=True)

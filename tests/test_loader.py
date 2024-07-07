@@ -27,13 +27,13 @@ def hello_world():
 
   # create a configuration
   config = tmp_path / "hosted-flasks.yaml"
-  content = ""
+  content = "apps:\n"
   for app_name in app_names:
     content += f"""
-{app_name}:
-  src: {app_name}
-  path: /{app_name}
-  hostname: {app_name}
+  {app_name}:
+    src: {app_name}
+    path: /{app_name}
+    hostname: {app_name}
 """
   config.write_text(content)
 
@@ -44,8 +44,9 @@ def hello_world():
 def test_apps_need_at_least_a_path_or_a_hostname(tmp_path):
   config = tmp_path / "hosted-flasks.yaml"
   content = """
-not_served:
-  src: not_served
+apps:
+  not_served:
+    src: not_served
 """
   config.write_text(content)
 
@@ -55,9 +56,10 @@ not_served:
 def test_app_without_implementation_is_not_loaded(tmp_path):
   config = tmp_path / "hosted-flasks.yaml"
   content = """
-dummy:
-  src: dummy
-  path: /dummy
+apps:
+  dummy:
+    src: dummy
+    path: /dummy
 """
   config.write_text(content)
 
@@ -73,9 +75,10 @@ def test_app_without_flask_object_is_not_loaded(tmp_path):
 
   config = tmp_path / "hosted-flasks.yaml"
   content = """
-dummy:
-  src: dummy
-  path: /dummy
+apps:
+  dummy:
+    src: dummy
+    path: /dummy
 """
   config.write_text(content)
   
@@ -91,9 +94,10 @@ def test_app_that_throws_exception_is_not_loaded(tmp_path):
 
   config = tmp_path / "hosted-flasks.yaml"
   content = """
-dummy:
-  src: dummy
-  path: /dummy
+apps:
+  dummy:
+    src: dummy
+    path: /dummy
 """
   config.write_text(content)
   
@@ -118,11 +122,12 @@ def hello_world():
   # create a configuration
   config = tmp_path / "hosted-flasks.yaml"
   content = f"""
-{app_name}:
-  src: {app_name}
-  app: {app_name}:custom_app
-  path: /{app_name}
-  hostname: {app_name}
+apps:
+  {app_name}:
+    src: {app_name}
+    app: {app_name}:custom_app
+    path: /{app_name}
+    hostname: {app_name}
 """
   config.write_text(content)
 
@@ -152,11 +157,12 @@ def hello_world():
   # create a configuration
   config = tmp_path / "hosted-flasks.yaml"
   content = f"""
-{app_name}:
-  src: {app_name}
-  app: {app_name}.sub:custom_app
-  path: /{app_name}
-  hostname: {app_name}
+apps:
+  {app_name}:
+    src: {app_name}
+    app: {app_name}.sub:custom_app
+    path: /{app_name}
+    hostname: {app_name}
 """
   config.write_text(content)
 
@@ -184,11 +190,12 @@ def hello_world():
   # create a configuration
   config = tmp_path / "hosted-flasks.yaml"
   content = f"""
-{app_name}:
-  src: {app_name}
-  app: {app_name}.app:server
-  path: /{app_name}
-  hostname: {app_name}
+apps:
+  {app_name}:
+    src: {app_name}
+    app: {app_name}.app:server
+    path: /{app_name}
+    hostname: {app_name}
 """
   config.write_text(content)
 
