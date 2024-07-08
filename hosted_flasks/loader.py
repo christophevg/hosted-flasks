@@ -70,33 +70,25 @@ class HostedFlask:
   @property
   def module_path(self):
     """
-    self.path can have several forms
-    - appname
-    - module_folder:appname
-    - module_file_name:appname
-    - module_folder/module_file_name:appname
+    self.app can have several forms
+    - appname                                 -> name/__init__:appname
+    - module_folder:appname                   -> module_folder/__init__:appname
+    - module_file_name:appname                -> module_file_name:appname
+    - module_folder/module_file_name:appname  -> module_folder/module_file_name:appname
     """
+
+    # determine module_folder
     parts = self.app.split(":", 1)  # app or name:app or name.sub:app
     if len(parts) == 1: # only an app object name
-      module = self.src.name  # default module name
+      module_folder = self.src.name  # add module name by default
     else: # explicit module path and app object name
-      module = parts[0]
-  
-    # construct filepath from module path on top of the parent root path
-    module_path = self.src.parent
-    path_parts = module.split(".")
-    for submodule in path_parts[:-1]:
-      module_path = module_path / submodule
+      module_folder = parts[0].replace(".", "/")  # turn dotted name into path
 
     # check if the last part of the module path points to a file, else add init
-    last_module_part = path_parts[-1]
-    module_file = f"{last_module_part}.py"
-    if (module_path / module_file).is_file():
-      module_path = module_path / module_file
-    else:
-      module_path = module_path / last_module_part / "__init__.py" 
-
-    return module_path
+    module_path = self.src.parent / module_folder
+    if module_path.with_suffix(".py").is_file():
+      return module_path.with_suffix(".py")
+    return module_path / "__init__.py"
   
   def load_handler(self):
     # create a fresh monkeypatched environment scoped to the app name

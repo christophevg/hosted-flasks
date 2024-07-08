@@ -202,3 +202,34 @@ apps:
   apps = get_apps(config, force=True)
   assert len(apps) == 1
   assert apps[0].name == app_name
+
+def test_app_with_dot_in_path(tmp_path):
+  app_name = "custom.app"
+  folder = tmp_path / app_name
+  folder.mkdir()
+  init = folder / "__init__.py"
+  init.write_text("""
+from flask import Flask
+
+server = Flask(__name__)
+
+@server.route("/")
+def hello_world():
+  return "Hello World"  
+""")
+
+  # create a configuration
+  config = tmp_path / "hosted-flasks.yaml"
+  content = f"""
+apps:
+  {app_name}:
+    src: {app_name}
+    app: server
+    path: /{app_name}
+    hostname: {app_name}
+"""
+  config.write_text(content)
+
+  apps = get_apps(config, force=True)
+  assert len(apps) == 1
+  assert apps[0].name == app_name
