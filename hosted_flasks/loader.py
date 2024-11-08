@@ -11,10 +11,11 @@ import yaml
 from importlib.util import spec_from_file_location, module_from_spec
 
 from dataclasses import dataclass, field
-from typing import Union, Dict
+from typing import Union, Dict, List
+
 from flask import Flask
 
-from hosted_flasks import statistics
+from hosted_flasks             import statistics
 from hosted_flasks.monkeypatch import Environment
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,9 @@ class HostedFlask:
   app          : str   = "app"
   handler      : Flask = field(repr=False, default=None)
   environ      : Dict  = None
-  track        : bool  = False
+
+  track        : List[str] = field(default_factory=list)
+  log          : statistics.LogConfig = field(default_factory=dict)
 
   title        : str   = None
   description  : str   = None
@@ -58,6 +61,9 @@ class HostedFlask:
     if not self.handler:
       logger.fatal(f"⛔️ an app needs a handler: {self.src.name}.{self.app}")
       apps.remove(self)
+    
+    # instantiate log configuration
+    self.log = statistics.LogConfig(**self.log)
     
     # install a tracker
     if self.track:

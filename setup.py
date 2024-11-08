@@ -27,6 +27,7 @@ INSTALL_REQUIRES = [
   "pyyaml",
   "humanize",
   "markdown",
+  "ua-parser",
   
 ]
 ENTRY_POINTS = {
