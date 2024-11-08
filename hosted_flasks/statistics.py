@@ -18,13 +18,15 @@ db     = None
 
 try:
   import pymongo
-  DB_CONN = os.environ.get("MONGODB_URI", "mongodb://localhost:27017/hosted")
+  DB_CONN = os.environ.get("HOSTED_MONGODB_URI", "mongodb://localhost:27017/hosted")
   DB_NAME = DB_CONN.split("/")[-1].split("?")[0]
   client = pymongo.MongoClient(DB_CONN)
   logger.debug(json.dumps(client.server_info(), indent=2, default=str))
   db = client[DB_NAME]
 except ModuleNotFoundError:
   pass
+except pymongo.errors.OperationFailure as err:
+  logger.warning(f"🚨🚨🚨 {err}")
 except Exception as err:
   logger.exception(err)
 
