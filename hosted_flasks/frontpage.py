@@ -4,9 +4,10 @@ import os
 
 from pathlib import Path
 
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, abort, request
 
-from hosted_flasks.loader import get_apps, get_config
+from hosted_flasks.loader     import get_apps, get_config
+from hosted_flasks.statistics import db
 
 logger = logging.getLogger(__name__)
 
@@ -40,3 +41,43 @@ def show_frontpage():
 def send_frontpage_static(filename):
   # static folder from root of app that uses hosted flasks to serve apps
   return send_from_directory("", filename)
+
+# get shared secret cookie
+SECRET = os.environ.get("HOSTED_FLASKS_STATS_SECRET", None)
+
+if SECRET:
+  @app.route("/stats")
+  def show_stats():
+    if not request.cookies.get("stats", None) == SECRET:
+      abort(404)
+    return render_template(
+      "stats.html",
+      apps=get_apps(),
+      title=get_config()["title"],
+      description=get_config()["description"],
+      stats=list(db.logs.aggregate( [
+          {
+            "$group": {
+              "_id": { 
+                 "hosted_flask": "$metadata.hosted_flask",
+                 "date": { "$dateToString": { "format": "%Y-%m-%d", "date": "$datetime" } },
+               },
+               "visitors": { "$sum": 1 }
+            }
+         },
+         {
+           "$sort": {
+              "_id": 1
+            }  
+         },
+         {
+           "$project" : {
+             "_id"          : 0,
+             "hosted_flask" : "$_id.hosted_flask",
+             "date"         : "$_id.date",
+             "visitors"     : "$visitors"
+           }
+         }
+      ]))
+    )
+
