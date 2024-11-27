@@ -7,13 +7,20 @@ apps:
     src: backend
     path: /backend
     hostname: backend.localhost:8000
+    track:
+      - hello_world
 
   frontend:
     src: frontend
     path: /frontend
     hostname: frontend.localhost:8000
+    track:
+      - hello_world
 
   complex:
     src: complex
     app: complex.sub:custom_app
     path: /complex
+    image: /img/frontpage.png
+    track:
+      - hello_world

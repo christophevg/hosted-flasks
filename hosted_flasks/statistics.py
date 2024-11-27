@@ -1,6 +1,5 @@
 import logging
 
-
 from dataclasses import dataclass, field, fields
 from typing import List
 
@@ -24,7 +23,7 @@ try:
   logger.debug(json.dumps(client.server_info(), indent=2, default=str))
   db = client[DB_NAME]
 except ModuleNotFoundError:
-  pass
+  logger.warning("⚠️ pymongo isn't installed, so statistical logging isn't available.")
 except pymongo.errors.OperationFailure as err:
   logger.warning(f"🚨🚨🚨 {err}")
 except Exception as err:
@@ -61,6 +60,8 @@ class LogConfig:
     
     return analysis
 
+SECRET = os.environ.get("HOSTED_FLASKS_STATS_NO_TRACKING", None)
+
 class Tracker:
   def __init__(self, hostedflask):
     self.hostedflask = hostedflask
@@ -83,6 +84,10 @@ class Tracker:
     self.track_request(request_ctx.request)
 
   def track_request(self, request):
+    if SECRET and request.cookies.get("tracking", None) == SECRET:
+      # don't track (probably) own access ;-)
+      return
+
     if request.endpoint in self.hostedflask.track:
       analytics = self.hostedflask.log.analyze(request)
       logger.info(f"📊 [{self.hostedflask.name}] {analytics}")
@@ -132,4 +137,168 @@ db.logs.aggregate( [
       }
    }
 ] )
+
+db.logs.find({ "metadata.hosted_flask" : "nationofpositivity" }, { "datetime": 1, "path": 1, "CF-Connecting-IP" : 1 })
+
+db.logs.aggregate( [
+   {
+      $group: {
+         _id: {
+           site: "$metadata.hosted_flask" ,
+           path: "$path"
+         },
+         visitors: { $sum: 1 }
+      }
+   },
+   {
+     $sort: { visitors: -1 }
+   }
+] )
+
+db.logs.find({ "metadata.hosted_flask" : "getijden" })
+
+
+db.logs.find(
+  { "metadata.hosted_flask" : "nationofpositivity" },
+  {"_id":0, "CF-Connecting-IP":1}
+).sort({"CF-Connecting-IP": 1})
+
+db.logs.distinct( "referrer", { "metadata.hosted_flask" : "nationofpositivity" } )
+
+db.logs.aggregate( [
+   {
+      $match: { "metadata.hosted_flask" : "nationofpositivity" }
+   },
+  {
+    $group: {
+      _id: "$referrer",
+      visitors: { $sum: 1 }
+    }
+  }
+])
+
+
+db.logs.aggregate( [
+   {
+      $match: { "metadata.hosted_flask" : "getijden" }
+   },
+   {
+      $project: {
+         date: {
+            $dateToParts: { date: "$datetime" }
+         },
+         site: "$metadata.hosted_flask",
+         path: "$path",
+         ip: "$CF-Connecting-IP"
+      }
+   },
+   {
+      $group: {
+         _id: {
+          "ip" : "$ip",
+          date: {
+             year: "$date.year",
+             month: "$date.month",
+             day: "$date.day"
+          },
+           path: "$path"
+         },
+         visitors: { $sum: 1 }
+      }
+   },
+   {
+     $sort: { 
+      "_id.date" : 1,
+      visitors: -1
+      }
+   }
+] )
+
+db.logs.aggregate( [
+   {
+      $project: {
+         date: {
+            $dateToParts: { date: "$datetime" }
+         },
+         site: "$metadata.hosted_flask" 
+      }
+   },
+   {
+      $group: {
+         _id: {
+            site: "$site",
+            date: {
+               year: "$date.year",
+               month: "$date.month",
+               day: "$date.day"
+            }
+         },
+         visitors: { $sum: 1 }
+      }
+   },
+   {
+     $sort: {
+      "_id.site": 1,
+      "_id.date": 1,
+      "visitors": -1
+      }  
+   }
+] )
+
+
+db.logs.aggregate( [
+   {
+      $match: { "metadata.hosted_flask" : "nationofpositivity" }
+   },
+   {
+      $project: {
+         date: {
+            $dateToParts: { date: "$datetime" }
+         },
+         site: "$metadata.hosted_flask",
+         path: "$path"
+      }
+   },
+   {
+      $group: {
+         _id: {
+            site: "$site",
+            date: {
+               year: "$date.year",
+               month: "$date.month",
+               day: "$date.day"
+            },
+            path: "$path"
+         },
+         visitors: { $sum: 1 }
+      }
+   },
+   {
+     $sort: {
+      "_id.site": 1,
+      "_id.date": 1,
+      "_id.path": 1,
+      "visitors": -1
+      }  
+   }
+] )
+
+db.logs.aggregate( [
+    {
+      $group: {
+        _id: { 
+           hosted_flask: "$metadata.hosted_flask",
+           date: { $dateToString: { format: "%Y-%m-%d", date: "$datetime" } },
+           landing: "$path"
+         },
+         visitors: { $sum: 1}
+      }
+   },
+   {
+     $sort: {
+      "_id": 1
+      }  
+   }
+] )
+
 """

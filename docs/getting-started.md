@@ -57,7 +57,7 @@ Optionally, but highly recommended 😇, set up a virtual environment:
 Install `hosted-flasks` and `gunicorn` (or your other favorite WSGI server) and start the Hosted Flasks server app:
 
 ```console
-% pip install hosted-flasks gunicorn
+% pip install hosted-flasks gunicorn eventlet
 
 % gunicorn -k eventlet -w 1 hosted_flasks.server:app
 [2024-04-28 15:35:46 +0200] [5320] [INFO] Starting gunicorn 22.0.0

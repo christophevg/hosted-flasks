@@ -1,4 +1,4 @@
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 # ruff: noqa: E402
 
@@ -10,4 +10,5 @@ eventlet.monkey_patch()
 # load the environment variables for this setup from .env file
 from dotenv import load_dotenv
 load_dotenv()
+load_dotenv(".env")
 load_dotenv(".env.local")
