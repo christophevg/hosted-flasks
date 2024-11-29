@@ -12,6 +12,8 @@ from flask.globals import request_ctx
 import json
 import os
 
+from hosted_flasks.utils import DottedDict
+
 logger = logging.getLogger(__name__)
 db     = None
 
@@ -60,6 +62,27 @@ class LogConfig:
     
     return analysis
 
+class Exclusions:
+  """
+  check if a log analysis matches at least one of a set of patterns
+  patterns are checked as substrings
+  """
+  def __init__(self, exclusions):
+    if not isinstance(exclusions, dict):
+      raise ValueError("expected exclusions to be a dict[path:pattern]")
+    logger.debug(f"applying exclusions {exclusions}")
+    self.exclusions = exclusions
+  
+  def matches(self, analytics):
+    analysis = DottedDict(analytics)
+    for key, pattern in self.exclusions.items():
+      try:
+        if pattern in analysis[key]:
+          return True
+      except KeyError:
+        pass
+    return False
+
 SECRET = os.environ.get("HOSTED_FLASKS_STATS_NO_TRACKING", None)
 
 class Tracker:
@@ -90,6 +113,8 @@ class Tracker:
 
     if request.endpoint in self.hostedflask.track:
       analytics = self.hostedflask.log.analyze(request)
+      if self.hostedflask.exclude.matches(analytics):
+        return
       logger.info(f"📊 [{self.hostedflask.name}] {analytics}")
       self.hits += 1
       if db is not None:

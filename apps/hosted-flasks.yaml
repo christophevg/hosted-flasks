@@ -9,6 +9,8 @@ apps:
     hostname: backend.localhost:8000
     track:
       - hello_world
+    exclude:
+      remote_addr: "127.0.0.1"
 
   frontend:
     src: frontend

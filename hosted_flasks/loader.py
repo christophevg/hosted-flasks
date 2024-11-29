@@ -34,6 +34,7 @@ class HostedFlask:
 
   track        : List[str] = field(default_factory=list)
   log          : statistics.LogConfig = field(default_factory=dict)
+  exclude      : statistics.Exclusions = field(default_factory=dict)
 
   title        : str   = None
   description  : str   = None
@@ -64,6 +65,9 @@ class HostedFlask:
     
     # instantiate log configuration
     self.log = statistics.LogConfig(**self.log)
+    
+    # instantiate Exclusions
+    self.exclude = statistics.Exclusions(self.exclude)
     
     # install a tracker
     if self.track:
