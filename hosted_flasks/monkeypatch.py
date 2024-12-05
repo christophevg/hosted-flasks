@@ -33,8 +33,24 @@ class Environment(UserDict):
   @classmethod
   def scope(cls, scope, debug=False):
     logger.info(f"🔧 creating fresh os.environ, for {scope}")
+    # Remove loaded modules, with some exceptions ;-)
+
+    # Reasoning: within the scope of an other hosted flask, modules have been
+    # loaded, during which they could have accessed environment variables and
+    # have stored their value locally, or simply got a reference to os.environ
+    # and use that later on. This means that IF another hosted flask would reuse
+    # them, the same environment variables would be used also. Since every
+    # hosted flask should be configurable with their own variables in a fresh
+    # environment, all modules should also be unloaded. Because we can't know
+    # which modules have already accessed and cached variables, we need to
+    # unload all of them. Due to other side-effects, like importing a class and
+    # comparing objects to it, which might cause the "orginally" same class to
+    # be different in two cases, some modules are excluded.
+    
+    # Warning: this approach is not fool proof. There can always be side-effects
+    # that will mutually block. For now it holds 😇
+
     import sys
-    # remove modules, with some exceptions ;-)
     for mod_name in list(sys.modules.keys()):
       keep = False
       for exception in DONT_UNLOAD_MODULES:
