@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 DONT_UNLOAD_MODULES = [
   "importlib", "warnings", "builtins", "sys", "_pytest", "codecs",
   "eventlet",
-  "flask", "hosted_flasks",
+  "werkzeug", "flask", "hosted_flasks",
   "cryptography", "bcrypt",
   "urllib3"
 ]
