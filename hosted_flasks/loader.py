@@ -36,6 +36,7 @@ class HostedFlask:
   log          : statistics.LogConfig = field(default_factory=dict)
   exclude      : statistics.Exclusions = field(default_factory=dict)
 
+  hide         : bool  = False
   title        : str   = None
   description  : str   = None
   image        : str   = None
