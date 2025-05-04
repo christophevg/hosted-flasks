@@ -31,7 +31,8 @@ def hello_world():
   config.write_text(f"""
 apps:
   {app_name}:
-    src: {app_name}
+    imports:
+      {app_name} : {init}
     path: /{app_name}
     hostname: {app_name}
 """)

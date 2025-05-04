@@ -4,7 +4,8 @@ description: |
   Flask app.
 apps:
   backend:
-    src: backend
+    imports:
+      backend: backend/__init__.py
     path: /backend
     hostname: backend.localhost:8000
     track:
@@ -13,15 +14,17 @@ apps:
       remote_addr: "127.0.0.1"
 
   frontend:
-    src: frontend
+    imports:
+      frontend: frontend/__init__.py
     path: /frontend
     hostname: frontend.localhost:8000
     track:
       - hello_world
 
   complex:
-    src: complex
-    app: complex.sub:custom_app
+    imports:
+      complex: complex/sub/__init__.py
+    app: complex:custom_app
     path: /complex
     image: /img/frontpage.png
     track:

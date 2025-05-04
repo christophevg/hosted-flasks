@@ -11,7 +11,7 @@ import yaml
 from importlib.util import spec_from_file_location, module_from_spec
 
 from dataclasses import dataclass, field
-from typing import Union, Dict, List
+from typing import Dict, List
 
 from flask import Flask
 
@@ -25,10 +25,13 @@ apps = []
 @dataclass
 class HostedFlask:
   name         : str
-  src          : Union[str, Path]
+  
   path         : str   = None
   hostname     : str   = None
+
+  imports      : Dict  = field(default_factory=dict)
   app          : str   = "app"
+
   handler      : Flask = field(repr=False, default=None)
   environ      : Dict  = None
 
@@ -48,12 +51,19 @@ class HostedFlask:
       logger.fatal(f"⛔️ an app needs at least a path or a hostname: {self.name}")
       return
 
-    self.src = Path(self.src).resolve() # ensure it's a Path
+    if not self.imports:
+      raise ValueError("specify at least 1 module to import from")
+
+    # ensure all imported paths are valid
+    for name, path in self.imports.items():
+      self.imports[name] = Path(path).resolve()
 
     # we need to add app to apps before loading the handler, because else the
     # monkeypatched os.environ.get won't be able to correct handle calls to it
     # at the time of loading the handler
     apps.append(self)
+
+    logger.debug(f"before handler: {self}")
 
     # if the handler isn't provided, load it from the source
     if not self.handler:
@@ -61,8 +71,9 @@ class HostedFlask:
       
     # without a handler, we remove ourself from the apps
     if not self.handler:
-      logger.fatal(f"⛔️ an app needs a handler: {self.src.name}.{self.app}")
+      logger.fatal(f"⛔️ an app needs a handler: {self.name}")
       apps.remove(self)
+      return
     
     # instantiate log configuration
     self.log = statistics.LogConfig(**self.log)
@@ -73,52 +84,56 @@ class HostedFlask:
     # install a tracker
     if self.track:
       statistics.track(self)
-  
+    
   @property
   def appname(self):
     return self.app.split(":", 1)[-1]  # app or name:app or name.sub:app
   
   @property
-  def module_path(self):
-    """
-    self.app can have several forms
-    - appname                                 -> name/__init__:appname
-    - module_folder:appname                   -> module_folder/__init__:appname
-    - module_file_name:appname                -> module_file_name:appname
-    - module_folder/module_file_name:appname  -> module_folder/module_file_name:appname
-    """
-
-    # determine module_folder
-    parts = self.app.split(":", 1)  # app or name:app or name.sub:app
-    if len(parts) == 1: # only an app object name
-      module_folder = self.src.name  # add module name by default
-    else: # explicit module path and app object name
-      module_folder = parts[0].replace(".", "/")  # turn dotted name into path
-
-    # check if the last part of the module path points to a file, else add init
-    module_path = self.src.parent / module_folder
-    if module_path.with_suffix(".py").is_file():
-      return module_path.with_suffix(".py")
-    return module_path / "__init__.py"
+  def appmodule(self):
+    parts = self.app.split(":")
+    parts.pop() # name
+    if len(parts) == 1:
+      return parts[0]
+    # no module name explicitly provided, use that of the imported module
+    if len(self.imports) == 1:
+      return list(self.imports.keys())[0]
+    raise ValueError("no module name provided in app setting, multiple loaded")
   
   def load_handler(self):
     # create a fresh monkeypatched environment scoped to the app name
     self.environ = Environment.scope(self.name)
 
-    # load the module, creating the handler flask app
-    try:
-      spec = spec_from_file_location(self.src.name, self.module_path)
+    def import_module(name, module_path):
+      spec = spec_from_file_location(name, module_path)
       mod = module_from_spec(spec)
-      sys.modules[self.src.name] = mod
+      sys.modules[name] = mod
       spec.loader.exec_module(mod)
-      # extract the handler from the mod using the appname
+      return mod  
+
+    # import all required modules and extract the flask app as handler
+    imported = {}
+    for name, path in self.imports.items():
+      try:
+        imported[name] = import_module(name, path)
+      except FileNotFoundError:
+        logger.warning(f"😞 {name}: {path} doesn't exist")
+      except Exception:
+        logger.exception(f"😞 {name}: {path} failed to load due to")
+
+    try:
+      mod = imported[self.appmodule]
+    except KeyError:
+      return
+
+    # extract the handler from the mod using the app configuration
+    # app = module_name : app_variable_name
+    # if only one module is loaded, it can be used as implicit default
+    # if no name is provided, it defaults to app
+    try:
       self.handler = getattr(mod, self.appname)
-    except FileNotFoundError:
-      logger.warning(f"😞 '{self.module_path}' doesn't exist")
     except AttributeError:
-      logger.warning(f"😞 '{self.module_path}' doesn't provide flask object: {self.app}")
-    except Exception:
-      logger.exception(f"😞 '{self.module_path}' failed to load due to")
+      logger.warning(f"😞  path doesn't provide flask object: {self.app}")
 
 def get_config(config=None):
   if not config:
@@ -142,11 +157,10 @@ def get_apps(config=None, force=False):
   # lazy load the apps
   if not apps:
     for name, settings in get_config(config)["apps"].items():
-      src = config.parent / settings.pop("src")
       settings["description"] = markdown.markdown(settings.pop("description", ""))
-      add_app(name, src, **settings)
+      add_app(name, **settings)
   return apps
 
-def add_app(name, src, **kwargs):
-  app = HostedFlask(name, src, **kwargs)  # adds self to global apps list
+def add_app(name, **kwargs):
+  app = HostedFlask(name, **kwargs)  # adds self to global apps list
   logger.info(f"🌍 loaded app: {app.name}")

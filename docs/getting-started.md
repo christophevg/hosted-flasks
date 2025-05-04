@@ -35,12 +35,14 @@ Next, we create a YAML configuration file, `hosted-flasks.yaml`, containing the 
 
 ```yaml
 backend:
-  src: backend
+  imports:
+    backend: backend/__init__.py
   path: /backend
   hostname: backend.localhost:8000
 
 frontend:
-  src: frontend
+  imports:
+    frontend: frontend/__init__.py
   path: /frontend
   hostname: frontend.localhost:8000
 ```

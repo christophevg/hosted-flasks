@@ -31,7 +31,8 @@ def hello_world():
   for app_name in app_names:
     content += f"""
   {app_name}:
-    src: {app_name}
+    imports:
+      {app_name} : {init}
     path: /{app_name}
     hostname: {app_name}
 """
@@ -46,20 +47,7 @@ def test_apps_need_at_least_a_path_or_a_hostname(tmp_path):
   content = """
 apps:
   not_served:
-    src: not_served
-"""
-  config.write_text(content)
-
-  apps = get_apps(config, force=True)
-  assert len(apps) == 0
-
-def test_app_without_implementation_is_not_loaded(tmp_path):
-  config = tmp_path / "hosted-flasks.yaml"
-  content = """
-apps:
-  dummy:
-    src: dummy
-    path: /dummy
+    app: server
 """
   config.write_text(content)
 
@@ -77,8 +65,8 @@ def test_app_without_flask_object_is_not_loaded(tmp_path):
   content = """
 apps:
   dummy:
-    src: dummy
-    path: /dummy
+    imports:
+      dummy: {init}
 """
   config.write_text(content)
   
@@ -96,8 +84,8 @@ def test_app_that_throws_exception_is_not_loaded(tmp_path):
   content = """
 apps:
   dummy:
-    src: dummy
-    path: /dummy
+    imports:
+      dummy: {init}
 """
   config.write_text(content)
   
@@ -124,7 +112,8 @@ def hello_world():
   content = f"""
 apps:
   {app_name}:
-    src: {app_name}
+    imports:
+      {app_name} : {init}
     app: {app_name}:custom_app
     path: /{app_name}
     hostname: {app_name}
@@ -159,7 +148,9 @@ def hello_world():
   content = f"""
 apps:
   {app_name}:
-    src: {app_name}
+    imports:
+      {app_name}: {init}
+      {app_name}.sub: {sub_init}
     app: {app_name}.sub:custom_app
     path: /{app_name}
     hostname: {app_name}
@@ -192,8 +183,9 @@ def hello_world():
   content = f"""
 apps:
   {app_name}:
-    src: {app_name}
-    app: {app_name}.app:server
+    imports:
+      {app_name}: {app}
+    app: {app_name}:server
     path: /{app_name}
     hostname: {app_name}
 """
@@ -223,7 +215,8 @@ def hello_world():
   content = f"""
 apps:
   {app_name}:
-    src: {app_name}
+    imports:
+      {app_name}: {init}
     app: server
     path: /{app_name}
     hostname: {app_name}
