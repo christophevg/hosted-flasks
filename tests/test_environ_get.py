@@ -9,9 +9,11 @@ def test_app_specific_environment_variable(tmp_path):
   init.write_text("""
 from flask import Flask
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
+# load_dotenv(find_dotenv()) # normally enough, in test _is_debugger return true
+load_dotenv(find_dotenv(Path(__file__).parent / ".env"))
 
 app = Flask(__name__)
 
