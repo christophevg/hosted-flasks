@@ -1,3 +1,5 @@
+-include .env
+
 # colors
 
 GREEN=\033[0;32m
@@ -7,30 +9,47 @@ NC=\033[0m
 
 # test envs
 
-PYTHON_VERSIONS ?= 3.8.12 3.9.18 3.10.13 3.11.5
-RUFF_PYTHON_VERSION ?= py38
+PYTHON_VERSIONS ?= 3.9.18 3.10.13 3.11.12 3.12.10
+RUFF_PYTHON_VERSION ?= py311
+
+# base env to create non-test envs from, e.g.: -docs -run
+PYTHON_BASE ?= 3.11.12
 
 PROJECT=$(shell basename $(CURDIR))
+
+# by default we assume a project environment with the project/folder name
+# this can be overridden using an enrionment variable
+ifeq ($(PROJECT_ENV),)
+PROJECT_ENV := $(PROJECT)
+endif
+
 PACKAGE_NAME=`cat .pypi-template | grep "^package_module_name" | cut -d":" -f2 | xargs`
 
-LOG_LEVEL?=ERROR
+LOG_LEVEL?=INFO
 SILENT?=yes
 
-RUN_CMD?=LOG_LEVEL=$(LOG_LEVEL) python -m $(PACKAGE_NAME)
+ifeq ($(wildcard pypi_template),) 
+	PYPI_TEMPLATE = pypi-template
+else 
+	PYPI_TEMPLATE = python -m pypi_template
+endif
+
+RUN_CMD?=LOG_LEVEL=$(LOG_LEVEL) $(PYPI_TEMPLATE)
 RUN_ARGS?=
 
 TEST_ENVS=$(addprefix $(PROJECT)-test-,$(PYTHON_VERSIONS))
 
 install: install-env-run install-env-docs install-env-test
 	@echo "👷‍♂️ $(BLUE)installing requirements in $(PROJECT)$(NC)"
-	pyenv local $(PROJECT)
+	pyenv local $(PROJECT_ENV)
 	pip install -U pip > /dev/null
+	pip install -U pypi-template > /dev/null
 	pip install -U wheel twine setuptools > /dev/null
 
 install-env-run:
 	@echo "👷‍♂️ $(BLUE)creating virtual environment $(PROJECT)-run$(NC)"
 	pyenv local --unset
-	-pyenv virtualenv $(PROJECT)-run > /dev/null
+	-pyenv virtualenv $(PYTHON_BASE) $(PROJECT)-run > /dev/null
 	pyenv local $(PROJECT)-run
 	pip install -U pip > /dev/null
 	pip install -r requirements.txt > /dev/null
@@ -39,7 +58,7 @@ install-env-run:
 install-env-docs:
 	@echo "👷‍♂️ $(BLUE)creating virtual environment $(PROJECT)-docs$(NC)"
 	pyenv local --unset
-	-pyenv virtualenv $(PROJECT)-docs > /dev/null
+	-pyenv virtualenv $(PYTHON_BASE) $(PROJECT)-docs > /dev/null
 	pyenv local $(PROJECT)-docs
 	pip install -U pip > /dev/null
 	pip install -r requirements.docs.txt > /dev/null
@@ -64,6 +83,8 @@ $(addprefix uninstall-env-test-,$(PYTHON_VERSIONS)) uninstall-env-docs uninstall
 	@echo "👷‍♂️ $(RED)deleting virtual environment $(PROJECT)-$*$(NC)"
 	-pyenv virtualenv-delete $(PROJECT)-$*
 
+reinstall: uninstall install
+
 clean-env:
 	@echo "👷‍♂️ $(RED)deleting all packages from current environment$(NC)"
 	pip freeze | cut -d"@" -f1 | cut -d'=' -f1 | xargs pip uninstall -y > /dev/null
@@ -78,8 +99,9 @@ env-%:
 	@pyenv local $(PROJECT)-$*
 
 env:
-	@echo "👷‍♂️ $(BLUE)activating project environment$(NC)"
-	@pyenv local $(PROJECT)
+	@echo "👷‍♂️ $(BLUE)activating project environment: $(PROJECT_ENV) / $(PROJECT)$(NC)"
+	@pyenv local $(PROJECT_ENV)
+	@$(PYPI_TEMPLATE) status > /dev/null
 
 env-test:
 	@echo "👷‍♂️ $(BLUE)activating test environments$(NC)"
@@ -91,7 +113,9 @@ run: env-run
 	@echo "👷‍♂️ $(BLUE)running$(GREEN) $(RUN_CMD) $(RUN_ARGS)$(NC)"
 	@$(RUN_CMD) $(RUN_ARGS)
 
-test: env-test lint
+test: env-test lint tox env
+	
+tox:
 ifeq ($(SILENT),yes)
 	tox -q
 else

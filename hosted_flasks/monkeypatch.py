@@ -97,3 +97,12 @@ class Environment(UserDict):
     except KeyError:
       raise KeyError
     return value
+
+  # solution for .get() not calling __getitem__ without contains >= 3.12
+  # inspiration: https://github.com/python/cpython/issues/105524
+  def __contains__(self, key):
+    try:
+      self[key]
+    except KeyError:
+      return False
+    return True
