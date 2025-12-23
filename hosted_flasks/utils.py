@@ -8,9 +8,14 @@ class DottedDict:
   """
   def __init__(self, wrapped_dict):
     self.wrapped_dict = wrapped_dict
-    
+
   def __getitem__(self, path):
     value = self.wrapped_dict
     for step in path.split("."):
       value = value[step]
     return value
+
+def ensure_is_list(x):
+  if not x:
+    return []
+  return x if isinstance(x, list) else [ x ]

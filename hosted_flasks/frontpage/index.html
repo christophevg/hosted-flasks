@@ -13,7 +13,7 @@
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
-      }      
+      }
     </style>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -61,14 +61,18 @@
               {% endif %}
               {% if app.path %}
                 <p class="card-text">
+                  {% for path in app.path %}
                   <i class="bi-globe2" style="color:cornflowerblue;;margin-right:5px"></i>
-                  <a href="{{ app.path }}">{{ app.path }}</a>
+                  <a href="{{ path }}">{{ path }}</a><br>
+                  {% endfor %}
                 </p>
               {% endif %}
               {% if app.hostname %}
               <p class="card-text">
+                {% for name in app.hostname %}
                 <i class="bi-globe2" style="color:cornflowerblue;;margin-right:5px"></i>
-                <a href="//{{ app.hostname }}">{{ app.hostname }}</a>
+                <a href="//{{ name }}">{{ name }}</a><br>
+                {% endfor %}
               </p>
               {% endif %}
               {% if app.github %}

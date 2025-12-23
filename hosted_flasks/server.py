@@ -39,8 +39,8 @@ class Dispatcher:
 
 # combine the apps with the frontpage
 
-hosts = { app.hostname : app.handler for app in get_apps() if app.hostname }
-paths = { app.path     : app.handler for app in get_apps() if app.path     }
+hosts = { name : app.handler for app in get_apps() for name in app.hostname }
+paths = { path : app.handler for app in get_apps() for path in app.path     }
 
 logger.info("🧭 dispatching domains:")
 for host, handler in hosts.items():

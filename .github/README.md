@@ -7,12 +7,11 @@
 ![Build Status](https://github.com/christophevg/hosted-flasks/actions/workflows/test.yaml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/hosted-flasks/badge/?version=latest)](https://hosted-flasks.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/christophevg/hosted-flasks/badge.svg?branch=master)](https://coveralls.io/github/christophevg/hosted-flasks?branch=master)
-[![Built with PyPi Template](https://img.shields.io/badge/PyPi_Template-v1.2.0-blue.svg)](https://github.com/christophevg/pypi-template)
+[![Built with PyPi Template](https://img.shields.io/badge/PyPi_Template-v1.4.0-blue.svg)](https://github.com/christophevg/pypi-template)
 
 
 
-## Documentation
-
-Visit [Read the Docs](https://hosted-flasks.readthedocs.org) for the full documentation, including overviews and several examples.
+> [!NOTE]  
+> Visit [Read the Docs](https://hosted-flasks.readthedocs.org) for the full documentation, including overviews and several examples.
 
 

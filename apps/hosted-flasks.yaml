@@ -7,7 +7,9 @@ apps:
     imports:
       backend: backend/__init__.py
     path: /backend
-    hostname: backend.localhost:8000
+    hostname:
+      - backend.localhost:8000
+      - backend2.localhost:8000
     track:
       - hello_world
     exclude:

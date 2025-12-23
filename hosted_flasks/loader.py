@@ -17,6 +17,7 @@ from flask import Flask
 
 from hosted_flasks             import statistics
 from hosted_flasks.monkeypatch import Environment
+from hosted_flasks.utils       import ensure_is_list
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +26,9 @@ apps = []
 @dataclass
 class HostedFlask:
   name         : str
-  
-  path         : str   = None
-  hostname     : str   = None
+
+  path         : List[str] = None
+  hostname     : List[str] = None
 
   imports      : Dict  = field(default_factory=dict)
   app          : str   = "app"
@@ -48,8 +49,12 @@ class HostedFlask:
 
   def __post_init__(self):
     if not self.path and not self.hostname:
-      logger.fatal(f"⛔️ an app needs at least a path or a hostname: {self.name}")
+      logger.fatal(f"⛔️ {self.name} needs at least one path or one hostname.")
       return
+
+    # ensure path and hostname are lists
+    self.path     = ensure_is_list(self.path)
+    self.hostname = ensure_is_list(self.hostname)
 
     if not self.imports:
       raise ValueError("specify at least 1 module to import from")
@@ -68,27 +73,27 @@ class HostedFlask:
     # if the handler isn't provided, load it from the source
     if not self.handler:
       self.load_handler()
-      
+
     # without a handler, we remove ourself from the apps
     if not self.handler:
       logger.fatal(f"⛔️ an app needs a handler: {self.name}")
       apps.remove(self)
       return
-    
+
     # instantiate log configuration
     self.log = statistics.LogConfig(**self.log)
-    
+
     # instantiate Exclusions
     self.exclude = statistics.Exclusions(self.exclude)
-    
+
     # install a tracker
     if self.track:
       statistics.track(self)
-    
+
   @property
   def appname(self):
     return self.app.split(":", 1)[-1]  # app or name:app or name.sub:app
-  
+
   @property
   def appmodule(self):
     parts = self.app.split(":")
@@ -99,7 +104,7 @@ class HostedFlask:
     if len(self.imports) == 1:
       return list(self.imports.keys())[0]
     raise ValueError("no module name provided in app setting, multiple loaded")
-  
+
   def load_handler(self):
     # create a fresh monkeypatched environment scoped to the app name
     self.environ = Environment.scope(self.name)
@@ -109,7 +114,7 @@ class HostedFlask:
       mod = module_from_spec(spec)
       sys.modules[name] = mod
       spec.loader.exec_module(mod)
-      return mod  
+      return mod
 
     # import all required modules and extract the flask app as handler
     imported = {}

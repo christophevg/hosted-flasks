@@ -61,7 +61,7 @@ if db is not None:
         stats=list(db.logs.aggregate( [
             {
               "$group": {
-                "_id": { 
+                "_id": {
                    "hosted_flask": "$metadata.hosted_flask",
                    "date": {
                      "$dateToString": {
@@ -76,7 +76,7 @@ if db is not None:
            {
              "$sort": {
                 "_id": 1
-              }  
+              }
            },
            {
              "$project" : {

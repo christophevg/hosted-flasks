@@ -18,6 +18,7 @@ package_module_name: hosted_flasks
 package_name: hosted-flasks
 package_tagline: serve flask apps side by side
 package_title: Hosted Flasks
+project_env: pypi-template
 readme: .github/README.md
 requires:
 - Flask
@@ -34,7 +35,8 @@ skip:
 - (package_module_name)
 - MANIFEST.in
 - .gitignore
-version: 1.2.0
+test_requires: []
+version: 1.4.0
 your_author_name: Christophe VG
 your_email_address: contact@christophe.vg
 your_full_name: Christophe VG

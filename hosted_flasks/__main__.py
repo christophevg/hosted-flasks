@@ -21,9 +21,11 @@ def cli():
   for app in get_apps():
     print(f"{app.name} is hosted on")
     if app.path:
-      print(f" - from path {app.path}")
+      for path in app.path:
+        print(f" - from path {path}")
     if app.hostname:
-      print(f" - from hostname {app.hostname}")
+      for name in app.hostname:
+        print(f" - from hostname {name}")
 
 if __name__ == "__main__":
   cli()

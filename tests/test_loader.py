@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
-  return "Hello World"  
+  return "Hello World"
 """)
 
   # create a configuration
@@ -69,7 +69,7 @@ apps:
       dummy: {init}
 """
   config.write_text(content)
-  
+
   apps = get_apps(config, force=True)
   assert len(apps) == 0
 
@@ -88,7 +88,7 @@ apps:
       dummy: {init}
 """
   config.write_text(content)
-  
+
   apps = get_apps(config, force=True)
   assert len(apps) == 0
 
@@ -104,7 +104,7 @@ custom_app = Flask(__name__)
 
 @custom_app.route("/")
 def hello_world():
-  return "Hello World"  
+  return "Hello World"
 """)
 
   # create a configuration
@@ -140,7 +140,7 @@ custom_app = Flask(__name__)
 
 @custom_app.route("/")
 def hello_world():
-  return "Hello World"  
+  return "Hello World"
 """)
 
   # create a configuration
@@ -175,7 +175,7 @@ server = Flask(__name__)
 
 @server.route("/")
 def hello_world():
-  return "Hello World"  
+  return "Hello World"
 """)
 
   # create a configuration
@@ -207,7 +207,7 @@ server = Flask(__name__)
 
 @server.route("/")
 def hello_world():
-  return "Hello World"  
+  return "Hello World"
 """)
 
   # create a configuration
@@ -226,3 +226,41 @@ apps:
   apps = get_apps(config, force=True)
   assert len(apps) == 1
   assert apps[0].name == app_name
+
+def test_app_with_two_hostnames_and_two_paths(tmp_path):
+  app_name = "custom_app"
+  folder = tmp_path / app_name
+  folder.mkdir()
+  init = folder / "__init__.py"
+  init.write_text("""
+from flask import Flask
+
+server = Flask(__name__)
+
+@server.route("/")
+def hello_world():
+  return "Hello World"
+""")
+
+  # create a configuration
+  config = tmp_path / "hosted-flasks.yaml"
+  content = f"""
+apps:
+  {app_name}:
+    imports:
+      {app_name}: {init}
+    app: server
+    path:
+      - /{app_name}
+      - /some_other_path
+    hostname:
+      - {app_name}
+      - some_other_name
+"""
+  config.write_text(content)
+
+  apps = get_apps(config, force=True)
+  assert len(apps) == 1
+  assert apps[0].name == app_name
+  assert len(apps[0].path) == 2
+  assert len(apps[0].hostname) == 2
