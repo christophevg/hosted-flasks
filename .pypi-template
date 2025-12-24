@@ -35,7 +35,7 @@ skip:
 - MANIFEST.in
 - .gitignore
 test_requires: []
-version: 1.4.0
+version: 1.4.1
 your_author_name: Christophe VG
 your_email_address: contact@christophe.vg
 your_full_name: Christophe VG
