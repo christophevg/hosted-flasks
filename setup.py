@@ -17,7 +17,6 @@ CLASSIFIERS      = [
   "Programming Language :: Python :: 3.11",
   "Environment :: Web Environment",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   
 ]
 INSTALL_REQUIRES = [
@@ -57,7 +56,7 @@ if __name__ == "__main__":
   setuptools.setup(
     name=NAME,
     version=VERSION,
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_namespace_packages(),
     author=AUTHOR,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
@@ -69,5 +68,5 @@ if __name__ == "__main__":
     install_requires=INSTALL_REQUIRES,
     entry_points=ENTRY_POINTS,
     scripts=SCRIPTS,
-    include_package_data=True    
+    include_package_data=True
   )

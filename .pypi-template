@@ -6,7 +6,6 @@ classifiers:
 - 'Programming Language :: Python :: 3.11'
 - 'Environment :: Web Environment'
 - 'Intended Audience :: Developers'
-- 'License :: OSI Approved :: MIT License'
 console_scripts:
 - hosted-flasks=hosted_flasks.__main__:cli
 first_year_of_publication: '2024'
