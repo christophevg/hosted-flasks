@@ -12,7 +12,8 @@ DONT_UNLOAD_MODULES = [
   "eventlet",
   "werkzeug", "flask", "hosted_flasks",
   "cryptography", "bcrypt",
-  "urllib3"
+  "urllib3",
+  "rich", "xml", "xmlschema", "pathlib"
 ]
 
 # keep a copy of the environment before we use any scoped environments
@@ -46,7 +47,7 @@ class Environment(UserDict):
     # unload all of them. Due to other side-effects, like importing a class and
     # comparing objects to it, which might cause the "orginally" same class to
     # be different in two cases, some modules are excluded.
-    
+
     # Warning: this approach is not fool proof. There can always be side-effects
     # that will mutually block. For now it holds 😇
 
@@ -58,7 +59,7 @@ class Environment(UserDict):
           keep = True
           break
       if not keep:
-        sys.modules.pop(mod_name, None) 
+        sys.modules.pop(mod_name, None)
     import os
     patched_environ = cls(scope, debug=debug)
     os.environ = patched_environ
@@ -71,7 +72,7 @@ class Environment(UserDict):
   def _log(self, msg):
     if self._debug:
       logger.info(msg) # pragma: no cover
-  
+
   def __setitem__(self, key, value):
     # add the scope prefix
     scoped_key = f"{self._scope}_{key}"
