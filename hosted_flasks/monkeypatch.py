@@ -13,7 +13,8 @@ DONT_UNLOAD_MODULES = [
   "werkzeug", "flask", "hosted_flasks",
   "cryptography", "bcrypt",
   "urllib3",
-  "rich", "xml", "xmlschema", "pathlib"
+  "rich", "xml", "xmlschema", "pathlib",
+  "dns", "dns.resolver"
 ]
 
 # keep a copy of the environment before we use any scoped environments
